@@ -4,154 +4,169 @@
   <meta charset="UTF-8" />
   <title>Твой финкабинет</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <!-- Telegram WebApp SDK (в мини-аппе будет использовано) -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --bg: #020617;
+      --card-bg: #020617;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --accent: #3b82f6;
+      --accent-text: #f9fafb;
+      --border: rgba(148,163,184,0.25);
+      --danger: #f97373;
+      --success: #4ade80;
     }
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
+
     body {
       margin: 0;
-      padding: 10px;
-      background: #020617;
-      color: #e5e7eb;
+      padding: 8px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 14px;
     }
+
     .app {
       max-width: 960px;
-      margin: 0 auto 40px;
+      margin: 0 auto 24px;
     }
+
     h1, h2, h3 {
-      margin: 0 0 8px;
+      margin: 0 0 6px;
+      font-weight: 600;
     }
-    h1 {
-      font-size: 22px;
-      font-weight: 650;
-    }
-    h2 {
-      font-size: 18px;
-    }
-    h3 {
-      font-size: 16px;
-    }
+    h1 { font-size: 20px; }
+    h2 { font-size: 18px; }
+    h3 { font-size: 16px; }
+
     .subtitle {
       font-size: 12px;
-      color: #9ca3af;
+      color: var(--muted);
       margin-bottom: 6px;
     }
+
     .card {
-      background: #020617;
-      border-radius: 12px;
-      padding: 10px;
-      margin-bottom: 10px;
-      box-shadow: 0 0 0 1px rgba(148,163,184,0.18);
+      background: var(--card-bg);
+      border-radius: 10px;
+      padding: 8px;
+      margin-bottom: 8px;
+      border: 1px solid var(--border);
     }
+
     .row {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 6px;
+      margin-bottom: 4px;
     }
     .col {
-      flex: 1 1 240px;
+      flex: 1 1 220px;
       min-width: 0;
     }
+
     label {
       display: block;
       font-size: 11px;
-      color: #9ca3af;
-      margin-bottom: 3px;
+      color: var(--muted);
+      margin-bottom: 2px;
     }
+
     input, select {
       width: 100%;
-      padding: 6px 8px;
+      padding: 5px 7px;
       border-radius: 8px;
       border: 1px solid #4b5563;
       background: #020617;
-      color: #e5e7eb;
+      color: var(--text);
       font-size: 13px;
+      line-height: 1.2;
     }
     input:focus, select:focus {
-      outline: 2px solid #3b82f6;
-      border-color: #60a5fa;
+      outline: 2px solid var(--accent);
+      border-color: var(--accent);
     }
+
     button {
       border: none;
-      border-radius: 10px;
-      padding: 7px 13px;
+      border-radius: 9px;
+      padding: 6px 12px;
       font-size: 13px;
       cursor: pointer;
-      background: #3b82f6;
-      color: #f9fafb;
+      background: var(--accent);
+      color: var(--accent-text);
       font-weight: 500;
     }
     button.secondary {
       background: #4b5563;
+      color: #e5e7eb;
     }
-    button:active {
-      transform: scale(0.98);
-    }
+    button:active { transform: scale(0.97); }
+
     .list {
-      margin-top: 6px;
+      margin-top: 4px;
       max-height: 260px;
       overflow-y: auto;
-      padding-right: 4px;
+      padding-right: 3px;
     }
+
     .item {
-      border-radius: 10px;
-      padding: 7px;
+      border-radius: 9px;
+      padding: 6px;
       background: #020617;
       border: 1px solid #1f2937;
-      margin-bottom: 6px;
+      margin-bottom: 5px;
       font-size: 13px;
     }
+
     .item-header {
       display: flex;
       justify-content: space-between;
-      margin-bottom: 4px;
+      gap: 6px;
+      margin-bottom: 3px;
       font-weight: 500;
     }
+
     .muted {
-      color: #9ca3af;
+      color: var(--muted);
       font-size: 12px;
     }
+
     .tag {
       display: inline-block;
-      padding: 2px 6px;
+      padding: 1px 5px;
       border-radius: 999px;
       font-size: 11px;
       background: #1f2937;
-      color: #e5e7eb;
+      color: var(--text);
       margin-left: 4px;
     }
+
     .kpi-row {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 6px;
     }
     .kpi {
-      flex: 1 1 150px;
+      flex: 1 1 160px;
       background: #020617;
-      border-radius: 10px;
-      padding: 8px;
+      border-radius: 9px;
+      padding: 6px;
       border: 1px solid #1f2937;
       font-size: 11px;
     }
     .kpi-label {
-      color: #9ca3af;
-      margin-bottom: 3px;
+      color: var(--muted);
+      margin-bottom: 2px;
     }
     .kpi-value {
       font-size: 15px;
       font-weight: 600;
     }
-    .danger {
-      color: #f97373;
-    }
-    .success {
-      color: #4ade80;
-    }
+    .danger { color: var(--danger); }
+    .success { color: var(--success); }
+
     .tabs {
       display: flex;
       margin-top: 6px;
@@ -159,7 +174,7 @@
       border-radius: 999px;
       background: #020617;
       padding: 2px;
-      box-shadow: 0 0 0 1px rgba(31,41,55,0.9);
+      border: 1px solid #1f2937;
     }
     .tab {
       flex: 1;
@@ -168,21 +183,46 @@
       border-radius: 999px;
       font-size: 13px;
       cursor: pointer;
-      color: #9ca3af;
+      color: var(--muted);
       user-select: none;
     }
     .tab.active {
       background: #111827;
-      color: #e5e7eb;
+      color: var(--text);
       font-weight: 500;
+      box-shadow: 0 0 0 1px rgba(59,130,246,0.3);
     }
+
+    .field-error {
+      color: var(--danger);
+      font-size: 11px;
+      margin-top: 1px;
+    }
+
+    .progress {
+      width: 100%;
+      height: 5px;
+      border-radius: 999px;
+      background: #111827;
+      overflow: hidden;
+      margin-top: 2px;
+    }
+    .progress-bar {
+      height: 100%;
+      background: #22c55e;
+    }
+
+    .details-toggle {
+      margin-top: 4px;
+      font-size: 12px;
+      color: var(--muted);
+      cursor: pointer;
+      user-select: none;
+    }
+
     @media (max-width: 600px) {
-      .row {
-        flex-direction: column;
-      }
-      .app {
-        margin-bottom: 20px;
-      }
+      .row { flex-direction: column; }
+      .app { margin-bottom: 16px; }
     }
   </style>
 </head>
@@ -193,13 +233,19 @@
 
   <div class="card">
     <h2>Дашборд</h2>
-    <div class="kpi-row" id="dashboard-kpis"></div>
+    <div class="kpi-row" id="dashboard-kpis-main"></div>
+    <div id="dashboard-details-toggle" class="details-toggle">
+      Показать детали
+    </div>
+    <div id="dashboard-kpis-details" style="display:none;margin-top:4px;">
+      <div class="kpi-row" id="dashboard-kpis-extra"></div>
+    </div>
   </div>
 
   <div class="tabs">
-    <div class="tab active" data-tab="deposits">Вклады</div>
-    <div class="tab" data-tab="loans">Кредиты</div>
-    <div class="tab" data-tab="incomes">Доходы</div>
+    <div class="tab active" data-tab="deposits" id="tab-btn-deposits">Вклады</div>
+    <div class="tab" data-tab="loans" id="tab-btn-loans">Кредиты</div>
+    <div class="tab" data-tab="incomes" id="tab-btn-incomes">Доходы</div>
   </div>
 
   <!-- ВКЛАДЫ -->
@@ -209,18 +255,18 @@
       <div class="row">
         <div class="col">
           <label>Название</label>
-          <input id="dep-name" placeholder="Напр. Вклад 10% на 6 мес" />
+          <input id="dep-name" placeholder="Вклад 10% на 6 мес" />
         </div>
         <div class="col">
           <label>Сумма, ₽</label>
-          <input id="dep-amount" type="number" inputmode="decimal" />
+          <input id="dep-amount" type="number" inputmode="decimal" placeholder="Напр. 300000" />
         </div>
         <div class="col">
           <label>Ставка, % годовых</label>
-          <input id="dep-rate" type="number" inputmode="decimal" />
+          <input id="dep-rate" type="number" inputmode="decimal" placeholder="Напр. 12" />
         </div>
       </div>
-      <div class="row" style="margin-top:6px;">
+      <div class="row">
         <div class="col">
           <label>Срок</label>
           <input id="dep-term-value" type="number" inputmode="numeric" placeholder="Напр. 6" />
@@ -237,7 +283,7 @@
           <input id="dep-start-date" type="date" />
         </div>
       </div>
-      <div style="margin-top:8px; display:flex; justify-content:flex-end; gap:8px;">
+      <div style="margin-top:6px; display:flex; justify-content:flex-end; gap:6px;">
         <button id="dep-add-btn">Сохранить вклад</button>
       </div>
     </div>
@@ -255,32 +301,32 @@
       <div class="row">
         <div class="col">
           <label>Название</label>
-          <input id="loan-name" placeholder="Напр. Кредит Т-Банк" />
+          <input id="loan-name" placeholder="Кредит Т-Банк" />
         </div>
         <div class="col">
           <label>Сумма кредита, ₽</label>
-          <input id="loan-principal" type="number" inputmode="decimal" />
+          <input id="loan-principal" type="number" inputmode="decimal" placeholder="Напр. 500000" />
         </div>
         <div class="col">
           <label>Текущий остаток, ₽</label>
-          <input id="loan-balance" type="number" inputmode="decimal" />
+          <input id="loan-balance" type="number" inputmode="decimal" placeholder="если пусто = сумма" />
         </div>
       </div>
-      <div class="row" style="margin-top:6px;">
+      <div class="row">
         <div class="col">
           <label>Ставка, % годовых</label>
-          <input id="loan-rate" type="number" inputmode="decimal" />
+          <input id="loan-rate" type="number" inputmode="decimal" placeholder="Напр. 20" />
         </div>
         <div class="col">
           <label>Ежемесячный платёж, ₽</label>
-          <input id="loan-monthly" type="number" inputmode="decimal" />
+          <input id="loan-monthly" type="number" inputmode="decimal" placeholder="Напр. 15000" />
         </div>
         <div class="col">
           <label>Дата начала</label>
           <input id="loan-start-date" type="date" />
         </div>
       </div>
-      <div style="margin-top:8px; display:flex; justify-content:flex-end; gap:8px;">
+      <div style="margin-top:6px; display:flex; justify-content:flex-end; gap:6px;">
         <button id="loan-add-btn">Сохранить кредит</button>
       </div>
     </div>
@@ -298,7 +344,7 @@
       <div class="row">
         <div class="col">
           <label>Название</label>
-          <input id="inc-name" placeholder="Напр. Зарплата" />
+          <input id="inc-name" placeholder="Зарплата" />
         </div>
         <div class="col">
           <label>Тип</label>
@@ -311,10 +357,10 @@
         </div>
         <div class="col">
           <label>Сумма, ₽</label>
-          <input id="inc-amount" type="number" inputmode="decimal" />
+          <input id="inc-amount" type="number" inputmode="decimal" placeholder="Напр. 120000" />
         </div>
       </div>
-      <div class="row" style="margin-top:6px;">
+      <div class="row">
         <div class="col">
           <label>Дата</label>
           <input id="inc-date" type="date" />
@@ -329,7 +375,7 @@
           </select>
         </div>
       </div>
-      <div style="margin-top:8px; display:flex; justify-content:flex-end; gap:8px;">
+      <div style="margin-top:6px; display:flex; justify-content:flex-end; gap:6px;">
         <button id="inc-add-btn">Сохранить доход</button>
       </div>
     </div>
@@ -342,27 +388,43 @@
 </div>
 
 <script>
-  // --- Telegram WebApp integration ---
+  const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+  let currentTab = 'deposits';
+
+  // --- Theme from Telegram ---
+  (function applyTheme() {
+    if (!tg) return;
+    const tp = tg.themeParams || {};
+    const root = document.documentElement;
+
+    if (tp.bg_color) root.style.setProperty('--bg', tp.bg_color);
+    if (tp.secondary_bg_color) root.style.setProperty('--card-bg', tp.secondary_bg_color);
+    if (tp.text_color) root.style.setProperty('--text', tp.text_color);
+    if (tp.hint_color) root.style.setProperty('--muted', tp.hint_color);
+    if (tp.button_color) root.style.setProperty('--accent', tp.button_color);
+    if (tp.button_text_color) root.style.setProperty('--accent-text', tp.button_text_color);
+  })();
+
+  // --- Telegram init ---
   (function initTelegram() {
-    if (window.Telegram && window.Telegram.WebApp) {
-      const tg = window.Telegram.WebApp;
+    if (tg) {
       tg.ready();
       tg.expand();
       const user = tg.initDataUnsafe?.user;
       if (user) {
         const label = document.getElementById('tg-user-label');
         label.textContent =
-          `Пользователь: ${user.first_name || ''} ${user.last_name || ''} ` +
-          (user.username ? `(@${user.username})` : '');
+          `Пользователь: ${user.first_name || ''} ${user.last_name || ''}`.trim() +
+          (user.username ? ` (@${user.username})` : '');
       }
     } else {
       document.getElementById('tg-user-label').textContent =
-        'Режим разработки: открыто вне Telegram.';
+        'Открыто вне Telegram (режим разработки).';
     }
   })();
 
   // --- State & storage ---
-  const STORAGE_KEY = 'finCabinetStateV2';
+  const STORAGE_KEY = 'finCabinetStateV3';
 
   let state = {
     deposits: [],
@@ -406,7 +468,36 @@
     return date.toLocaleDateString('ru-RU');
   }
 
-  // --- Business logic: ВКЛАДЫ ---
+  function setDefaultDate(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (!el.value) {
+      const today = new Date();
+      el.value = today.toISOString().slice(0, 10);
+    }
+  }
+
+  ['dep-start-date', 'loan-start-date', 'inc-date'].forEach(setDefaultDate);
+
+  // --- Inline errors ---
+  function showFieldError(inputEl, msg) {
+    if (!inputEl) return;
+    let err = inputEl.parentElement.querySelector('.field-error');
+    if (!err) {
+      err = document.createElement('div');
+      err.className = 'field-error';
+      inputEl.parentElement.appendChild(err);
+    }
+    err.textContent = msg;
+    const oldBorder = inputEl.style.borderColor;
+    inputEl.style.borderColor = 'var(--danger)';
+    setTimeout(() => {
+      inputEl.style.borderColor = oldBorder || '';
+      err.textContent = '';
+    }, 2500);
+  }
+
+  // --- Business logic: deposits ---
   function calcDeposit(deposit) {
     const amount = Number(deposit.amount) || 0;
     const rate = Number(deposit.rate_apy) || 0;
@@ -421,7 +512,7 @@
       years = termValue / 12;
     }
 
-    const interest = amount * (rate / 100) * years; // простые %
+    const interest = amount * (rate / 100) * years;
     const finalAmount = amount + interest;
 
     let endDate = null;
@@ -437,7 +528,7 @@
     return { interest, finalAmount, endDate };
   }
 
-  // --- Business logic: КРЕДИТЫ ---
+  // --- Business logic: loans ---
   function calcLoan(loan) {
     const principal = Number(loan.initial_amount) || 0;
     const balance = Number(loan.current_balance) || 0;
@@ -446,12 +537,12 @@
     const start = loan.start_date ? new Date(loan.start_date) : null;
 
     if (balance <= 0 || monthly <= 0) {
-      return { months: 0, payoffDate: null, totalPaid: 0, overpay: 0 };
+      return { months: 0, payoffDate: null, totalPaid: 0, overpay: 0, progress: 0 };
     }
 
     let months = Math.ceil(balance / monthly);
     if (rate > 0) {
-      months = Math.ceil(months * 1.1); // небольшой запас
+      months = Math.ceil(months * 1.1);
     }
 
     let payoffDate = null;
@@ -462,30 +553,33 @@
 
     const totalPaid = monthly * months;
     const overpay = totalPaid - principal;
+    const progress = principal > 0 ? (principal - balance) / principal : 0;
 
-    return { months, payoffDate, totalPaid, overpay };
+    return { months, payoffDate, totalPaid, overpay, progress };
   }
 
-  // --- Business logic: ДОХОДЫ ---
+  // --- Business logic: incomes ---
   function calcIncomeMonthly(income) {
     const amount = Number(income.amount) || 0;
     switch (income.frequency) {
       case 'monthly':
         return amount;
       case 'weekly':
-        return amount * 4.33; // среднее кол-во недель в месяце
+        return amount * 4.33;
       case 'yearly':
         return amount / 12;
       case 'once':
       default:
-        return 0; // разовый доход не считаем в "ежемесячный"
+        return 0;
     }
   }
 
-  // --- Rendering: DASHBOARD ---
+  // --- DASHBOARD ---
   function renderDashboard() {
-    const kpisContainer = document.getElementById('dashboard-kpis');
-    kpisContainer.innerHTML = '';
+    const mainEl = document.getElementById('dashboard-kpis-main');
+    const extraEl = document.getElementById('dashboard-kpis-extra');
+    mainEl.innerHTML = '';
+    extraEl.innerHTML = '';
 
     const totalDepositPrincipal = state.deposits.reduce(
       (sum, d) => sum + (Number(d.amount) || 0),
@@ -518,25 +612,11 @@
     const netFuture = totalDepositFinal - totalLoanBalance;
     const cashFlow = totalMonthlyIncome - totalLoanMonthlyPayment;
 
-    const kpis = [
-      { label: 'Вклады (сейчас)', value: formatMoney(totalDepositPrincipal) },
-      { label: 'Вклады (в конце срока)', value: formatMoney(totalDepositFinal) },
-      { label: 'Долги (остаток)', value: formatMoney(totalLoanBalance), danger: true },
-      {
-        label: 'Доходы в месяц',
-        value: formatMoney(totalMonthlyIncome),
-        cls: totalMonthlyIncome >= 0 ? 'success' : ''
-      },
-      {
-        label: 'Платежи по кредитам / мес',
-        value: formatMoney(totalLoanMonthlyPayment),
-        danger: totalLoanMonthlyPayment > 0
-      },
-      {
-        label: 'Чистый денежный поток / мес',
-        value: formatMoney(cashFlow),
-        cls: cashFlow >= 0 ? 'success' : 'danger'
-      },
+    const dti = totalMonthlyIncome > 0
+      ? totalLoanMonthlyPayment / totalMonthlyIncome
+      : null;
+
+    const mainKpis = [
       {
         label: 'Net worth сейчас',
         value: formatMoney(netNow),
@@ -546,29 +626,59 @@
         label: 'Net worth в будущем',
         value: formatMoney(netFuture),
         cls: netFuture >= 0 ? 'success' : 'danger'
+      },
+      {
+        label: 'Доходы / мес',
+        value: formatMoney(totalMonthlyIncome),
+        cls: totalMonthlyIncome >= 0 ? 'success' : ''
+      },
+      {
+        label: 'Платежи по кредитам / мес',
+        value: formatMoney(totalLoanMonthlyPayment),
+        cls: totalLoanMonthlyPayment > 0 ? 'danger' : ''
+      },
+      {
+        label: 'Чистый поток / мес',
+        value: formatMoney(cashFlow),
+        cls: cashFlow >= 0 ? 'success' : 'danger'
       }
     ];
 
-    for (const k of kpis) {
-      const div = document.createElement('div');
-      div.className = 'kpi';
-      div.innerHTML = `
-        <div class="kpi-label">${k.label}</div>
-        <div class="kpi-value ${k.danger ? 'danger' : ''} ${k.cls || ''}">
-          ${k.value}
-        </div>
-      `;
-      kpisContainer.appendChild(div);
+    const extraKpis = [
+      { label: 'Вклады (сейчас)', value: formatMoney(totalDepositPrincipal) },
+      { label: 'Вклады (в конце срока)', value: formatMoney(totalDepositFinal) },
+      { label: 'Долги (остаток)', value: formatMoney(totalLoanBalance), cls: totalLoanBalance > 0 ? 'danger' : '' },
+      { label: 'Долги (изначально)', value: formatMoney(totalLoanPrincipal) },
+      {
+        label: 'Долговая нагрузка (DTI)',
+        value: dti === null ? '—' : (dti * 100).toFixed(0) + '%',
+        cls: dti == null ? '' : dti < 0.3 ? 'success' : dti < 0.5 ? '' : 'danger'
+      }
+    ];
+
+    function renderKpis(list, container) {
+      for (const k of list) {
+        const div = document.createElement('div');
+        div.className = 'kpi';
+        div.innerHTML = `
+          <div class="kpi-label">${k.label}</div>
+          <div class="kpi-value ${k.cls || ''}">${k.value}</div>
+        `;
+        container.appendChild(div);
+      }
     }
+
+    renderKpis(mainKpis, mainEl);
+    renderKpis(extraKpis, extraEl);
   }
 
-  // --- Rendering: ВКЛАДЫ ---
+  // --- Deposits list ---
   function renderDeposits() {
     const list = document.getElementById('dep-list');
     list.innerHTML = '';
 
     if (!state.deposits.length) {
-      list.innerHTML = '<div class="muted">Вкладов пока нет</div>';
+      list.innerHTML = '<div class="muted">Вкладов пока нет. Добавь первый выше.</div>';
       return;
     }
 
@@ -601,23 +711,28 @@
 
       list.appendChild(div);
     });
+
+    // бейджи с количеством
+    document.getElementById('tab-btn-deposits').textContent = `Вклады (${state.deposits.length})`;
   }
 
-  // --- Rendering: КРЕДИТЫ ---
+  // --- Loans list ---
   function renderLoans() {
     const list = document.getElementById('loan-list');
     list.innerHTML = '';
 
     if (!state.loans.length) {
-      list.innerHTML = '<div class="muted">Кредитов пока нет</div>';
+      list.innerHTML = '<div class="muted">Кредитов пока нет. Добавь первый выше.</div>';
       return;
     }
 
     state.loans.forEach((l, idx) => {
-      const { months, payoffDate, totalPaid, overpay } = calcLoan(l);
+      const { months, payoffDate, totalPaid, overpay, progress } = calcLoan(l);
 
       const div = document.createElement('div');
       div.className = 'item';
+
+      const pct = Math.max(0, Math.min(100, Math.round(progress * 100)));
 
       div.innerHTML = `
         <div class="item-header">
@@ -634,6 +749,10 @@
           Всего выплат: ${formatMoney(totalPaid)} • Переплата:
           <span class="${overpay >= 0 ? 'danger' : ''}">${formatMoney(overpay)}</span>
         </div>
+        <div class="muted" style="margin-top:3px;">Прогресс погашения (${pct}%)</div>
+        <div class="progress">
+          <div class="progress-bar" style="width:${pct}%;"></div>
+        </div>
         <div style="margin-top:4px; display:flex; justify-content:flex-end;">
           <button class="secondary" data-remove-loan="${idx}">Удалить</button>
         </div>
@@ -641,33 +760,35 @@
 
       list.appendChild(div);
     });
+
+    document.getElementById('tab-btn-loans').textContent = `Кредиты (${state.loans.length})`;
   }
 
-  // --- Rendering: ДОХОДЫ ---
+  // --- Incomes list ---
   function renderIncomes() {
     const list = document.getElementById('inc-list');
     list.innerHTML = '';
 
     if (!state.incomes.length) {
-      list.innerHTML = '<div class="muted">Доходов пока нет</div>';
+      list.innerHTML = '<div class="muted">Доходов пока нет. Добавь первый выше.</div>';
       return;
     }
 
+    const typeMap = {
+      salary: 'Зарплата',
+      dividends: 'Дивиденды',
+      interest: 'Проценты',
+      other: 'Другое'
+    };
+    const freqMap = {
+      once: 'разово',
+      monthly: 'ежемесячно',
+      weekly: 'еженедельно',
+      yearly: 'ежегодно'
+    };
+
     state.incomes.forEach((inc, idx) => {
       const monthly = calcIncomeMonthly(inc);
-      const dt = inc.date ? new Date(inc.date) : null;
-      const freqMap = {
-        once: 'разово',
-        monthly: 'ежемесячно',
-        weekly: 'еженедельно',
-        yearly: 'ежегодно'
-      };
-      const typeMap = {
-        salary: 'Зарплата',
-        dividends: 'Дивиденды',
-        interest: 'Проценты',
-        other: 'Другое'
-      };
 
       const div = document.createElement('div');
       div.className = 'item';
@@ -690,6 +811,8 @@
 
       list.appendChild(div);
     });
+
+    document.getElementById('tab-btn-incomes').textContent = `Доходы (${state.incomes.length})`;
   }
 
   function renderAll() {
@@ -699,32 +822,68 @@
     renderIncomes();
   }
 
-  // --- Tabs ---
-  document.querySelectorAll('.tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      const target = tab.getAttribute('data-tab');
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
+  // --- Tabs & MainButton ---
+  function setTab(tab) {
+    currentTab = tab;
+    document.querySelectorAll('.tab').forEach(t => {
+      t.classList.toggle('active', t.dataset.tab === tab);
+    });
+    document.getElementById('tab-deposits').style.display = tab === 'deposits' ? '' : 'none';
+    document.getElementById('tab-loans').style.display = tab === 'loans' ? '' : 'none';
+    document.getElementById('tab-incomes').style.display = tab === 'incomes' ? '' : 'none';
 
-      document.getElementById('tab-deposits').style.display = target === 'deposits' ? '' : 'none';
-      document.getElementById('tab-loans').style.display = target === 'loans' ? '' : 'none';
-      document.getElementById('tab-incomes').style.display = target === 'incomes' ? '' : 'none';
+    if (tg) {
+      const textMap = {
+        deposits: 'Сохранить вклад',
+        loans: 'Сохранить кредит',
+        incomes: 'Сохранить доход'
+      };
+      tg.MainButton.setText(textMap[tab] || 'Сохранить');
+      tg.MainButton.show();
+    }
+  }
+
+  document.querySelectorAll('.tab').forEach(tabEl => {
+    tabEl.addEventListener('click', () => {
+      setTab(tabEl.dataset.tab);
     });
   });
 
-  // --- Handlers: Добавление вкладов ---
+  if (tg) {
+    tg.MainButton.onClick(() => {
+      if (currentTab === 'deposits') document.getElementById('dep-add-btn').click();
+      if (currentTab === 'loans') document.getElementById('loan-add-btn').click();
+      if (currentTab === 'incomes') document.getElementById('inc-add-btn').click();
+    });
+  }
+
+  // --- Dashboard details toggle ---
+  document.getElementById('dashboard-details-toggle').addEventListener('click', () => {
+    const box = document.getElementById('dashboard-kpis-details');
+    const opened = box.style.display !== 'none';
+    box.style.display = opened ? 'none' : 'block';
+    document.getElementById('dashboard-details-toggle').textContent =
+      opened ? 'Показать детали' : 'Скрыть детали';
+  });
+
+  // --- Handlers: add deposit ---
   document.getElementById('dep-add-btn').addEventListener('click', () => {
     const name = document.getElementById('dep-name').value.trim();
-    const amount = document.getElementById('dep-amount').value;
-    const rate = document.getElementById('dep-rate').value;
-    const termValue = document.getElementById('dep-term-value').value;
+    const amountEl = document.getElementById('dep-amount');
+    const rateEl = document.getElementById('dep-rate');
+    const termValEl = document.getElementById('dep-term-value');
     const termUnit = document.getElementById('dep-term-unit').value;
     const startDate = document.getElementById('dep-start-date').value;
 
-    if (!amount || !rate || !termValue) {
-      alert('Нужно заполнить сумму, ставку и срок.');
-      return;
-    }
+    const amount = amountEl.value;
+    const rate = rateEl.value;
+    const termValue = termValEl.value;
+
+    let ok = true;
+    if (!amount) { showFieldError(amountEl, 'Укажи сумму'); ok = false; }
+    if (!rate) { showFieldError(rateEl, 'Укажи ставку'); ok = false; }
+    if (!termValue) { showFieldError(termValEl, 'Укажи срок'); ok = false; }
+    if (!ok) return;
 
     state.deposits.push({
       id: Date.now(),
@@ -737,32 +896,35 @@
     });
 
     document.getElementById('dep-name').value = '';
-    document.getElementById('dep-amount').value = '';
-    document.getElementById('dep-rate').value = '';
-    document.getElementById('dep-term-value').value = '';
+    amountEl.value = '';
+    rateEl.value = '';
+    termValEl.value = '';
     document.getElementById('dep-term-unit').value = 'months';
-    document.getElementById('dep-start-date').value = '';
+    setDefaultDate('dep-start-date');
 
     saveState();
   });
 
-  // --- Handlers: Добавление кредитов ---
+  // --- Handlers: add loan ---
   document.getElementById('loan-add-btn').addEventListener('click', () => {
     const name = document.getElementById('loan-name').value.trim();
-    const principal = document.getElementById('loan-principal').value;
-    let balance = document.getElementById('loan-balance').value;
-    const rate = document.getElementById('loan-rate').value;
-    const monthly = document.getElementById('loan-monthly').value;
+    const principalEl = document.getElementById('loan-principal');
+    const balanceEl = document.getElementById('loan-balance');
+    const rateEl = document.getElementById('loan-rate');
+    const monthlyEl = document.getElementById('loan-monthly');
     const startDate = document.getElementById('loan-start-date').value;
 
-    if (!principal || !monthly) {
-      alert('Нужно заполнить сумму кредита и ежемесячный платёж.');
-      return;
-    }
+    const principal = principalEl.value;
+    let balance = balanceEl.value;
+    const rate = rateEl.value;
+    const monthly = monthlyEl.value;
 
-    if (!balance) {
-      balance = principal;
-    }
+    let ok = true;
+    if (!principal) { showFieldError(principalEl, 'Укажи сумму кредита'); ok = false; }
+    if (!monthly) { showFieldError(monthlyEl, 'Укажи ежемесячный платёж'); ok = false; }
+    if (!ok) return;
+
+    if (!balance) balance = principal;
 
     state.loans.push({
       id: Date.now(),
@@ -775,25 +937,26 @@
     });
 
     document.getElementById('loan-name').value = '';
-    document.getElementById('loan-principal').value = '';
-    document.getElementById('loan-balance').value = '';
-    document.getElementById('loan-rate').value = '';
-    document.getElementById('loan-monthly').value = '';
-    document.getElementById('loan-start-date').value = '';
+    principalEl.value = '';
+    balanceEl.value = '';
+    rateEl.value = '';
+    monthlyEl.value = '';
+    setDefaultDate('loan-start-date');
 
     saveState();
   });
 
-  // --- Handlers: Добавление доходов ---
+  // --- Handlers: add income ---
   document.getElementById('inc-add-btn').addEventListener('click', () => {
     const name = document.getElementById('inc-name').value.trim();
     const type = document.getElementById('inc-type').value;
-    const amount = document.getElementById('inc-amount').value;
+    const amountEl = document.getElementById('inc-amount');
     const date = document.getElementById('inc-date').value;
-    const frequency = document.getElementById('inc-frequency').value;
+    const freq = document.getElementById('inc-frequency').value;
 
+    const amount = amountEl.value;
     if (!amount) {
-      alert('Нужно указать сумму дохода.');
+      showFieldError(amountEl, 'Укажи сумму дохода');
       return;
     }
 
@@ -803,26 +966,30 @@
       type,
       amount,
       date,
-      frequency
+      frequency: freq
     });
 
     document.getElementById('inc-name').value = '';
-    document.getElementById('inc-amount').value = '';
-    document.getElementById('inc-date').value = '';
+    amountEl.value = '';
+    setDefaultDate('inc-date');
     document.getElementById('inc-type').value = 'salary';
     document.getElementById('inc-frequency').value = 'once';
 
     saveState();
   });
 
-  // --- Delegated delete handlers ---
+  // --- Deletes ---
   document.getElementById('dep-list').addEventListener('click', (e) => {
     const btn = e.target.closest('button[data-remove-dep]');
     if (!btn) return;
     const idx = Number(btn.getAttribute('data-remove-dep'));
-    if (!isNaN(idx)) {
-      state.deposits.splice(idx, 1);
-      saveState();
+    const item = state.deposits[idx];
+    if (!isNaN(idx) && item) {
+      const title = item.name || 'вклад';
+      if (confirm(`Удалить ${title}?`)) {
+        state.deposits.splice(idx, 1);
+        saveState();
+      }
     }
   });
 
@@ -830,9 +997,13 @@
     const btn = e.target.closest('button[data-remove-loan]');
     if (!btn) return;
     const idx = Number(btn.getAttribute('data-remove-loan'));
-    if (!isNaN(idx)) {
-      state.loans.splice(idx, 1);
-      saveState();
+    const item = state.loans[idx];
+    if (!isNaN(idx) && item) {
+      const title = item.name || 'кредит';
+      if (confirm(`Удалить ${title}?`)) {
+        state.loans.splice(idx, 1);
+        saveState();
+      }
     }
   });
 
@@ -840,15 +1011,22 @@
     const btn = e.target.closest('button[data-remove-inc]');
     if (!btn) return;
     const idx = Number(btn.getAttribute('data-remove-inc'));
-    if (!isNaN(idx)) {
-      state.incomes.splice(idx, 1);
-      saveState();
+    const item = state.incomes[idx];
+    if (!isNaN(idx) && item) {
+      const title = item.name || 'доход';
+      if (confirm(`Удалить ${title}?`)) {
+        state.incomes.splice(idx, 1);
+        saveState();
+      }
     }
   });
 
   // --- Init ---
   loadState();
   renderAll();
+  setTab('deposits');
 </script>
 </body>
 </html>
+
+
