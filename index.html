@@ -4,66 +4,83 @@
   <meta charset="UTF-8" />
   <title>Твой финкабинет</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <!-- Telegram WebApp SDK (будет работать, когда откроешь в мини-аппе) -->
+  <!-- Telegram WebApp SDK (в мини-аппе будет использовано) -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
+    * {
+      box-sizing: border-box;
+    }
     body {
       margin: 0;
-      padding: 12px;
-      background: #0f172a;
+      padding: 10px;
+      background: #020617;
       color: #e5e7eb;
+    }
+    .app {
+      max-width: 960px;
+      margin: 0 auto 40px;
     }
     h1, h2, h3 {
       margin: 0 0 8px;
     }
-    .app {
-      max-width: 900px;
-      margin: 0 auto;
+    h1 {
+      font-size: 22px;
+      font-weight: 650;
+    }
+    h2 {
+      font-size: 18px;
+    }
+    h3 {
+      font-size: 16px;
+    }
+    .subtitle {
+      font-size: 12px;
+      color: #9ca3af;
+      margin-bottom: 6px;
     }
     .card {
-      background: #111827;
+      background: #020617;
       border-radius: 12px;
-      padding: 12px;
-      margin-bottom: 12px;
-      box-shadow: 0 0 0 1px rgba(148,163,184,0.15);
+      padding: 10px;
+      margin-bottom: 10px;
+      box-shadow: 0 0 0 1px rgba(148,163,184,0.18);
     }
     .row {
       display: flex;
       flex-wrap: wrap;
-      gap: 12px;
+      gap: 10px;
     }
     .col {
-      flex: 1 1 260px;
+      flex: 1 1 240px;
       min-width: 0;
     }
     label {
       display: block;
-      font-size: 12px;
+      font-size: 11px;
       color: #9ca3af;
-      margin-bottom: 4px;
+      margin-bottom: 3px;
     }
-    input {
+    input, select {
       width: 100%;
-      box-sizing: border-box;
       padding: 6px 8px;
       border-radius: 8px;
       border: 1px solid #4b5563;
       background: #020617;
       color: #e5e7eb;
-      font-size: 14px;
+      font-size: 13px;
     }
-    input:focus {
+    input:focus, select:focus {
       outline: 2px solid #3b82f6;
       border-color: #60a5fa;
     }
     button {
       border: none;
       border-radius: 10px;
-      padding: 8px 14px;
-      font-size: 14px;
+      padding: 7px 13px;
+      font-size: 13px;
       cursor: pointer;
       background: #3b82f6;
       color: #f9fafb;
@@ -76,14 +93,14 @@
       transform: scale(0.98);
     }
     .list {
-      margin-top: 8px;
+      margin-top: 6px;
       max-height: 260px;
       overflow-y: auto;
       padding-right: 4px;
     }
     .item {
       border-radius: 10px;
-      padding: 8px;
+      padding: 7px;
       background: #020617;
       border: 1px solid #1f2937;
       margin-bottom: 6px;
@@ -114,19 +131,19 @@
       gap: 8px;
     }
     .kpi {
-      flex: 1 1 140px;
+      flex: 1 1 150px;
       background: #020617;
       border-radius: 10px;
       padding: 8px;
       border: 1px solid #1f2937;
-      font-size: 12px;
+      font-size: 11px;
     }
     .kpi-label {
       color: #9ca3af;
-      margin-bottom: 4px;
+      margin-bottom: 3px;
     }
     .kpi-value {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
     }
     .danger {
@@ -137,11 +154,12 @@
     }
     .tabs {
       display: flex;
-      margin-top: 8px;
+      margin-top: 6px;
       margin-bottom: 8px;
       border-radius: 999px;
       background: #020617;
       padding: 2px;
+      box-shadow: 0 0 0 1px rgba(31,41,55,0.9);
     }
     .tab {
       flex: 1;
@@ -151,6 +169,7 @@
       font-size: 13px;
       cursor: pointer;
       color: #9ca3af;
+      user-select: none;
     }
     .tab.active {
       background: #111827;
@@ -161,13 +180,16 @@
       .row {
         flex-direction: column;
       }
+      .app {
+        margin-bottom: 20px;
+      }
     }
   </style>
 </head>
 <body>
 <div class="app">
   <h1>Твой финкабинет</h1>
-  <p class="muted" id="tg-user-label"></p>
+  <p class="subtitle" id="tg-user-label"></p>
 
   <div class="card">
     <h2>Дашборд</h2>
@@ -177,15 +199,17 @@
   <div class="tabs">
     <div class="tab active" data-tab="deposits">Вклады</div>
     <div class="tab" data-tab="loans">Кредиты</div>
+    <div class="tab" data-tab="incomes">Доходы</div>
   </div>
 
+  <!-- ВКЛАДЫ -->
   <div id="tab-deposits">
     <div class="card">
       <h3>Добавить вклад</h3>
       <div class="row">
         <div class="col">
           <label>Название</label>
-          <input id="dep-name" placeholder="Напр. Вклад 10% на 12 мес" />
+          <input id="dep-name" placeholder="Напр. Вклад 10% на 6 мес" />
         </div>
         <div class="col">
           <label>Сумма, ₽</label>
@@ -196,17 +220,24 @@
           <input id="dep-rate" type="number" inputmode="decimal" />
         </div>
       </div>
-      <div class="row" style="margin-top:8px;">
+      <div class="row" style="margin-top:6px;">
         <div class="col">
-          <label>Срок, месяцев</label>
-          <input id="dep-term-months" type="number" inputmode="numeric" />
+          <label>Срок</label>
+          <input id="dep-term-value" type="number" inputmode="numeric" placeholder="Напр. 6" />
+        </div>
+        <div class="col">
+          <label>Единица срока</label>
+          <select id="dep-term-unit">
+            <option value="months">месяцев</option>
+            <option value="weeks">недель</option>
+          </select>
         </div>
         <div class="col">
           <label>Дата начала</label>
           <input id="dep-start-date" type="date" />
         </div>
       </div>
-      <div style="margin-top:10px; display:flex; justify-content:flex-end; gap:8px;">
+      <div style="margin-top:8px; display:flex; justify-content:flex-end; gap:8px;">
         <button id="dep-add-btn">Сохранить вклад</button>
       </div>
     </div>
@@ -217,6 +248,7 @@
     </div>
   </div>
 
+  <!-- КРЕДИТЫ -->
   <div id="tab-loans" style="display:none;">
     <div class="card">
       <h3>Добавить кредит</h3>
@@ -234,7 +266,7 @@
           <input id="loan-balance" type="number" inputmode="decimal" />
         </div>
       </div>
-      <div class="row" style="margin-top:8px;">
+      <div class="row" style="margin-top:6px;">
         <div class="col">
           <label>Ставка, % годовых</label>
           <input id="loan-rate" type="number" inputmode="decimal" />
@@ -248,7 +280,7 @@
           <input id="loan-start-date" type="date" />
         </div>
       </div>
-      <div style="margin-top:10px; display:flex; justify-content:flex-end; gap:8px;">
+      <div style="margin-top:8px; display:flex; justify-content:flex-end; gap:8px;">
         <button id="loan-add-btn">Сохранить кредит</button>
       </div>
     </div>
@@ -258,10 +290,59 @@
       <div class="list" id="loan-list"></div>
     </div>
   </div>
+
+  <!-- ДОХОДЫ -->
+  <div id="tab-incomes" style="display:none;">
+    <div class="card">
+      <h3>Добавить доход</h3>
+      <div class="row">
+        <div class="col">
+          <label>Название</label>
+          <input id="inc-name" placeholder="Напр. Зарплата" />
+        </div>
+        <div class="col">
+          <label>Тип</label>
+          <select id="inc-type">
+            <option value="salary">Зарплата</option>
+            <option value="dividends">Дивиденды</option>
+            <option value="interest">Проценты</option>
+            <option value="other">Другое</option>
+          </select>
+        </div>
+        <div class="col">
+          <label>Сумма, ₽</label>
+          <input id="inc-amount" type="number" inputmode="decimal" />
+        </div>
+      </div>
+      <div class="row" style="margin-top:6px;">
+        <div class="col">
+          <label>Дата</label>
+          <input id="inc-date" type="date" />
+        </div>
+        <div class="col">
+          <label>Частота</label>
+          <select id="inc-frequency">
+            <option value="once">Разово</option>
+            <option value="monthly">Ежемесячно</option>
+            <option value="weekly">Еженедельно</option>
+            <option value="yearly">Ежегодно</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin-top:8px; display:flex; justify-content:flex-end; gap:8px;">
+        <button id="inc-add-btn">Сохранить доход</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Мои доходы</h3>
+      <div class="list" id="inc-list"></div>
+    </div>
+  </div>
 </div>
 
 <script>
-  // --- Telegram WebApp integration (не обязательно локально, но важно в мини-аппе) ---
+  // --- Telegram WebApp integration ---
   (function initTelegram() {
     if (window.Telegram && window.Telegram.WebApp) {
       const tg = window.Telegram.WebApp;
@@ -270,20 +351,23 @@
       const user = tg.initDataUnsafe?.user;
       if (user) {
         const label = document.getElementById('tg-user-label');
-        label.textContent = `Пользователь: ${user.first_name || ''} ${user.last_name || ''} (@${user.username || ''})`.trim();
+        label.textContent =
+          `Пользователь: ${user.first_name || ''} ${user.last_name || ''} ` +
+          (user.username ? `(@${user.username})` : '');
       }
     } else {
       document.getElementById('tg-user-label').textContent =
-        'Работает в браузере без Telegram (режим разработки).';
+        'Режим разработки: открыто вне Telegram.';
     }
   })();
 
   // --- State & storage ---
-  const STORAGE_KEY = 'finCabinetStateV1';
+  const STORAGE_KEY = 'finCabinetStateV2';
 
   let state = {
     deposits: [],
-    loans: []
+    loans: [],
+    incomes: []
   };
 
   function loadState() {
@@ -294,7 +378,8 @@
       if (parsed && typeof parsed === 'object') {
         state = {
           deposits: Array.isArray(parsed.deposits) ? parsed.deposits : [],
-          loans: Array.isArray(parsed.loans) ? parsed.loans : []
+          loans: Array.isArray(parsed.loans) ? parsed.loans : [],
+          incomes: Array.isArray(parsed.incomes) ? parsed.incomes : []
         };
       }
     } catch (e) {
@@ -321,27 +406,38 @@
     return date.toLocaleDateString('ru-RU');
   }
 
-  // --- Business logic ---
-
+  // --- Business logic: ВКЛАДЫ ---
   function calcDeposit(deposit) {
     const amount = Number(deposit.amount) || 0;
     const rate = Number(deposit.rate_apy) || 0;
-    const termMonths = Number(deposit.term_months) || 0;
+    const termValue = Number(deposit.term_value) || 0;
+    const termUnit = deposit.term_unit || 'months';
     const start = deposit.start_date ? new Date(deposit.start_date) : null;
 
-    const years = termMonths / 12;
-    const interest = amount * (rate / 100) * years; // простые проценты
+    let years = 0;
+    if (termUnit === 'weeks') {
+      years = termValue / 52;
+    } else {
+      years = termValue / 12;
+    }
+
+    const interest = amount * (rate / 100) * years; // простые %
     const finalAmount = amount + interest;
 
     let endDate = null;
     if (start && !isNaN(start.getTime())) {
       endDate = new Date(start.getTime());
-      endDate.setMonth(endDate.getMonth() + termMonths);
+      if (termUnit === 'weeks') {
+        endDate.setDate(endDate.getDate() + termValue * 7);
+      } else {
+        endDate.setMonth(endDate.getMonth() + termValue);
+      }
     }
 
     return { interest, finalAmount, endDate };
   }
 
+  // --- Business logic: КРЕДИТЫ ---
   function calcLoan(loan) {
     const principal = Number(loan.initial_amount) || 0;
     const balance = Number(loan.current_balance) || 0;
@@ -353,10 +449,7 @@
       return { months: 0, payoffDate: null, totalPaid: 0, overpay: 0 };
     }
 
-    // Грубая оценка: без учёта процентов
     let months = Math.ceil(balance / monthly);
-
-    // Можно чуть скорректировать на проценты (очень примитивно)
     if (rate > 0) {
       months = Math.ceil(months * 1.1); // небольшой запас
     }
@@ -373,30 +466,87 @@
     return { months, payoffDate, totalPaid, overpay };
   }
 
-  // --- Rendering ---
+  // --- Business logic: ДОХОДЫ ---
+  function calcIncomeMonthly(income) {
+    const amount = Number(income.amount) || 0;
+    switch (income.frequency) {
+      case 'monthly':
+        return amount;
+      case 'weekly':
+        return amount * 4.33; // среднее кол-во недель в месяце
+      case 'yearly':
+        return amount / 12;
+      case 'once':
+      default:
+        return 0; // разовый доход не считаем в "ежемесячный"
+    }
+  }
 
+  // --- Rendering: DASHBOARD ---
   function renderDashboard() {
     const kpisContainer = document.getElementById('dashboard-kpis');
     kpisContainer.innerHTML = '';
 
-    const totalDepositPrincipal = state.deposits.reduce((sum, d) => sum + (Number(d.amount) || 0), 0);
+    const totalDepositPrincipal = state.deposits.reduce(
+      (sum, d) => sum + (Number(d.amount) || 0),
+      0
+    );
     const totalDepositFinal = state.deposits.reduce((sum, d) => {
       const { finalAmount } = calcDeposit(d);
       return sum + finalAmount;
     }, 0);
 
-    const totalLoanBalance = state.loans.reduce((sum, l) => sum + (Number(l.current_balance) || 0), 0);
-    const totalLoanPrincipal = state.loans.reduce((sum, l) => sum + (Number(l.initial_amount) || 0), 0);
+    const totalLoanBalance = state.loans.reduce(
+      (sum, l) => sum + (Number(l.current_balance) || 0),
+      0
+    );
+    const totalLoanPrincipal = state.loans.reduce(
+      (sum, l) => sum + (Number(l.initial_amount) || 0),
+      0
+    );
+    const totalLoanMonthlyPayment = state.loans.reduce(
+      (sum, l) => sum + (Number(l.monthly_payment) || 0),
+      0
+    );
+
+    const totalMonthlyIncome = state.incomes.reduce(
+      (sum, inc) => sum + calcIncomeMonthly(inc),
+      0
+    );
 
     const netNow = totalDepositPrincipal - totalLoanBalance;
     const netFuture = totalDepositFinal - totalLoanBalance;
+    const cashFlow = totalMonthlyIncome - totalLoanMonthlyPayment;
 
     const kpis = [
       { label: 'Вклады (сейчас)', value: formatMoney(totalDepositPrincipal) },
       { label: 'Вклады (в конце срока)', value: formatMoney(totalDepositFinal) },
       { label: 'Долги (остаток)', value: formatMoney(totalLoanBalance), danger: true },
-      { label: 'Net worth сейчас', value: formatMoney(netNow), cls: netNow >= 0 ? 'success' : 'danger' },
-      { label: 'Net worth в будущем', value: formatMoney(netFuture), cls: netFuture >= 0 ? 'success' : 'danger' }
+      {
+        label: 'Доходы в месяц',
+        value: formatMoney(totalMonthlyIncome),
+        cls: totalMonthlyIncome >= 0 ? 'success' : ''
+      },
+      {
+        label: 'Платежи по кредитам / мес',
+        value: formatMoney(totalLoanMonthlyPayment),
+        danger: totalLoanMonthlyPayment > 0
+      },
+      {
+        label: 'Чистый денежный поток / мес',
+        value: formatMoney(cashFlow),
+        cls: cashFlow >= 0 ? 'success' : 'danger'
+      },
+      {
+        label: 'Net worth сейчас',
+        value: formatMoney(netNow),
+        cls: netNow >= 0 ? 'success' : 'danger'
+      },
+      {
+        label: 'Net worth в будущем',
+        value: formatMoney(netFuture),
+        cls: netFuture >= 0 ? 'success' : 'danger'
+      }
     ];
 
     for (const k of kpis) {
@@ -404,12 +554,15 @@
       div.className = 'kpi';
       div.innerHTML = `
         <div class="kpi-label">${k.label}</div>
-        <div class="kpi-value ${k.danger ? 'danger' : ''} ${k.cls || ''}">${k.value}</div>
+        <div class="kpi-value ${k.danger ? 'danger' : ''} ${k.cls || ''}">
+          ${k.value}
+        </div>
       `;
       kpisContainer.appendChild(div);
     }
   }
 
+  // --- Rendering: ВКЛАДЫ ---
   function renderDeposits() {
     const list = document.getElementById('dep-list');
     list.innerHTML = '';
@@ -421,6 +574,7 @@
 
     state.deposits.forEach((d, idx) => {
       const { interest, finalAmount, endDate } = calcDeposit(d);
+      const unitLabel = d.term_unit === 'weeks' ? 'нед.' : 'мес.';
 
       const div = document.createElement('div');
       div.className = 'item';
@@ -431,13 +585,14 @@
           <span>${formatMoney(Number(d.amount) || 0)}</span>
         </div>
         <div class="muted">
-          Ставка: ${d.rate_apy || 0}% • Срок: ${d.term_months || 0} мес
+          Ставка: ${d.rate_apy || 0}% • Срок: ${d.term_value || 0} ${unitLabel}
         </div>
         <div class="muted">
           Начало: ${d.start_date || '—'} • Конец: ${formatDate(endDate)}
         </div>
         <div class="muted">
-          Доход: <span class="success">${formatMoney(interest)}</span> • В конце срока: <b>${formatMoney(finalAmount)}</b>
+          Доход: <span class="success">${formatMoney(interest)}</span> •
+          В конце срока: <b>${formatMoney(finalAmount)}</b>
         </div>
         <div style="margin-top:4px; display:flex; justify-content:flex-end;">
           <button class="secondary" data-remove-dep="${idx}">Удалить</button>
@@ -448,6 +603,7 @@
     });
   }
 
+  // --- Rendering: КРЕДИТЫ ---
   function renderLoans() {
     const list = document.getElementById('loan-list');
     list.innerHTML = '';
@@ -475,10 +631,60 @@
           Старт: ${l.start_date || '—'} • Ориентир закрытия: ${formatDate(payoffDate)} (${months || 0} мес)
         </div>
         <div class="muted">
-          Всего выплат: ${formatMoney(totalPaid)} • Переплата: <span class="${overpay >= 0 ? 'danger' : ''}">${formatMoney(overpay)}</span>
+          Всего выплат: ${formatMoney(totalPaid)} • Переплата:
+          <span class="${overpay >= 0 ? 'danger' : ''}">${formatMoney(overpay)}</span>
         </div>
         <div style="margin-top:4px; display:flex; justify-content:flex-end;">
           <button class="secondary" data-remove-loan="${idx}">Удалить</button>
+        </div>
+      `;
+
+      list.appendChild(div);
+    });
+  }
+
+  // --- Rendering: ДОХОДЫ ---
+  function renderIncomes() {
+    const list = document.getElementById('inc-list');
+    list.innerHTML = '';
+
+    if (!state.incomes.length) {
+      list.innerHTML = '<div class="muted">Доходов пока нет</div>';
+      return;
+    }
+
+    state.incomes.forEach((inc, idx) => {
+      const monthly = calcIncomeMonthly(inc);
+      const dt = inc.date ? new Date(inc.date) : null;
+      const freqMap = {
+        once: 'разово',
+        monthly: 'ежемесячно',
+        weekly: 'еженедельно',
+        yearly: 'ежегодно'
+      };
+      const typeMap = {
+        salary: 'Зарплата',
+        dividends: 'Дивиденды',
+        interest: 'Проценты',
+        other: 'Другое'
+      };
+
+      const div = document.createElement('div');
+      div.className = 'item';
+
+      div.innerHTML = `
+        <div class="item-header">
+          <span>${inc.name || 'Без названия'} <span class="tag">${typeMap[inc.type] || ''}</span></span>
+          <span>${formatMoney(Number(inc.amount) || 0)}</span>
+        </div>
+        <div class="muted">
+          Дата: ${inc.date || '—'} • Частота: ${freqMap[inc.frequency] || ''}
+        </div>
+        <div class="muted">
+          Оценка в месяц: <span class="success">${formatMoney(monthly)}</span>
+        </div>
+        <div style="margin-top:4px; display:flex; justify-content:flex-end;">
+          <button class="secondary" data-remove-inc="${idx}">Удалить</button>
         </div>
       `;
 
@@ -490,6 +696,7 @@
     renderDashboard();
     renderDeposits();
     renderLoans();
+    renderIncomes();
   }
 
   // --- Tabs ---
@@ -501,6 +708,7 @@
 
       document.getElementById('tab-deposits').style.display = target === 'deposits' ? '' : 'none';
       document.getElementById('tab-loans').style.display = target === 'loans' ? '' : 'none';
+      document.getElementById('tab-incomes').style.display = target === 'incomes' ? '' : 'none';
     });
   });
 
@@ -509,10 +717,11 @@
     const name = document.getElementById('dep-name').value.trim();
     const amount = document.getElementById('dep-amount').value;
     const rate = document.getElementById('dep-rate').value;
-    const termMonths = document.getElementById('dep-term-months').value;
+    const termValue = document.getElementById('dep-term-value').value;
+    const termUnit = document.getElementById('dep-term-unit').value;
     const startDate = document.getElementById('dep-start-date').value;
 
-    if (!amount || !rate || !termMonths) {
+    if (!amount || !rate || !termValue) {
       alert('Нужно заполнить сумму, ставку и срок.');
       return;
     }
@@ -522,15 +731,16 @@
       name,
       amount,
       rate_apy: rate,
-      term_months: termMonths,
+      term_value: termValue,
+      term_unit: termUnit,
       start_date: startDate
     });
 
-    // очистка формы
     document.getElementById('dep-name').value = '';
     document.getElementById('dep-amount').value = '';
     document.getElementById('dep-rate').value = '';
-    document.getElementById('dep-term-months').value = '';
+    document.getElementById('dep-term-value').value = '';
+    document.getElementById('dep-term-unit').value = 'months';
     document.getElementById('dep-start-date').value = '';
 
     saveState();
@@ -546,7 +756,7 @@
     const startDate = document.getElementById('loan-start-date').value;
 
     if (!principal || !monthly) {
-      alert('Нужно заполнить сумму кредита и платёж.');
+      alert('Нужно заполнить сумму кредита и ежемесячный платёж.');
       return;
     }
 
@@ -574,6 +784,37 @@
     saveState();
   });
 
+  // --- Handlers: Добавление доходов ---
+  document.getElementById('inc-add-btn').addEventListener('click', () => {
+    const name = document.getElementById('inc-name').value.trim();
+    const type = document.getElementById('inc-type').value;
+    const amount = document.getElementById('inc-amount').value;
+    const date = document.getElementById('inc-date').value;
+    const frequency = document.getElementById('inc-frequency').value;
+
+    if (!amount) {
+      alert('Нужно указать сумму дохода.');
+      return;
+    }
+
+    state.incomes.push({
+      id: Date.now(),
+      name,
+      type,
+      amount,
+      date,
+      frequency
+    });
+
+    document.getElementById('inc-name').value = '';
+    document.getElementById('inc-amount').value = '';
+    document.getElementById('inc-date').value = '';
+    document.getElementById('inc-type').value = 'salary';
+    document.getElementById('inc-frequency').value = 'once';
+
+    saveState();
+  });
+
   // --- Delegated delete handlers ---
   document.getElementById('dep-list').addEventListener('click', (e) => {
     const btn = e.target.closest('button[data-remove-dep]');
@@ -591,6 +832,16 @@
     const idx = Number(btn.getAttribute('data-remove-loan'));
     if (!isNaN(idx)) {
       state.loans.splice(idx, 1);
+      saveState();
+    }
+  });
+
+  document.getElementById('inc-list').addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-remove-inc]');
+    if (!btn) return;
+    const idx = Number(btn.getAttribute('data-remove-inc'));
+    if (!isNaN(idx)) {
+      state.incomes.splice(idx, 1);
       saveState();
     }
   });
