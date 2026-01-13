@@ -1,0 +1,603 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Твой финкабинет</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Telegram WebApp SDK (будет работать, когда откроешь в мини-аппе) -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    body {
+      margin: 0;
+      padding: 12px;
+      background: #0f172a;
+      color: #e5e7eb;
+    }
+    h1, h2, h3 {
+      margin: 0 0 8px;
+    }
+    .app {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .card {
+      background: #111827;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 12px;
+      box-shadow: 0 0 0 1px rgba(148,163,184,0.15);
+    }
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .col {
+      flex: 1 1 260px;
+      min-width: 0;
+    }
+    label {
+      display: block;
+      font-size: 12px;
+      color: #9ca3af;
+      margin-bottom: 4px;
+    }
+    input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 6px 8px;
+      border-radius: 8px;
+      border: 1px solid #4b5563;
+      background: #020617;
+      color: #e5e7eb;
+      font-size: 14px;
+    }
+    input:focus {
+      outline: 2px solid #3b82f6;
+      border-color: #60a5fa;
+    }
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 8px 14px;
+      font-size: 14px;
+      cursor: pointer;
+      background: #3b82f6;
+      color: #f9fafb;
+      font-weight: 500;
+    }
+    button.secondary {
+      background: #4b5563;
+    }
+    button:active {
+      transform: scale(0.98);
+    }
+    .list {
+      margin-top: 8px;
+      max-height: 260px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .item {
+      border-radius: 10px;
+      padding: 8px;
+      background: #020617;
+      border: 1px solid #1f2937;
+      margin-bottom: 6px;
+      font-size: 13px;
+    }
+    .item-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+      font-weight: 500;
+    }
+    .muted {
+      color: #9ca3af;
+      font-size: 12px;
+    }
+    .tag {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 999px;
+      font-size: 11px;
+      background: #1f2937;
+      color: #e5e7eb;
+      margin-left: 4px;
+    }
+    .kpi-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .kpi {
+      flex: 1 1 140px;
+      background: #020617;
+      border-radius: 10px;
+      padding: 8px;
+      border: 1px solid #1f2937;
+      font-size: 12px;
+    }
+    .kpi-label {
+      color: #9ca3af;
+      margin-bottom: 4px;
+    }
+    .kpi-value {
+      font-size: 16px;
+      font-weight: 600;
+    }
+    .danger {
+      color: #f97373;
+    }
+    .success {
+      color: #4ade80;
+    }
+    .tabs {
+      display: flex;
+      margin-top: 8px;
+      margin-bottom: 8px;
+      border-radius: 999px;
+      background: #020617;
+      padding: 2px;
+    }
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 6px 0;
+      border-radius: 999px;
+      font-size: 13px;
+      cursor: pointer;
+      color: #9ca3af;
+    }
+    .tab.active {
+      background: #111827;
+      color: #e5e7eb;
+      font-weight: 500;
+    }
+    @media (max-width: 600px) {
+      .row {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <h1>Твой финкабинет</h1>
+  <p class="muted" id="tg-user-label"></p>
+
+  <div class="card">
+    <h2>Дашборд</h2>
+    <div class="kpi-row" id="dashboard-kpis"></div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="deposits">Вклады</div>
+    <div class="tab" data-tab="loans">Кредиты</div>
+  </div>
+
+  <div id="tab-deposits">
+    <div class="card">
+      <h3>Добавить вклад</h3>
+      <div class="row">
+        <div class="col">
+          <label>Название</label>
+          <input id="dep-name" placeholder="Напр. Вклад 10% на 12 мес" />
+        </div>
+        <div class="col">
+          <label>Сумма, ₽</label>
+          <input id="dep-amount" type="number" inputmode="decimal" />
+        </div>
+        <div class="col">
+          <label>Ставка, % годовых</label>
+          <input id="dep-rate" type="number" inputmode="decimal" />
+        </div>
+      </div>
+      <div class="row" style="margin-top:8px;">
+        <div class="col">
+          <label>Срок, месяцев</label>
+          <input id="dep-term-months" type="number" inputmode="numeric" />
+        </div>
+        <div class="col">
+          <label>Дата начала</label>
+          <input id="dep-start-date" type="date" />
+        </div>
+      </div>
+      <div style="margin-top:10px; display:flex; justify-content:flex-end; gap:8px;">
+        <button id="dep-add-btn">Сохранить вклад</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Мои вклады</h3>
+      <div class="list" id="dep-list"></div>
+    </div>
+  </div>
+
+  <div id="tab-loans" style="display:none;">
+    <div class="card">
+      <h3>Добавить кредит</h3>
+      <div class="row">
+        <div class="col">
+          <label>Название</label>
+          <input id="loan-name" placeholder="Напр. Кредит Т-Банк" />
+        </div>
+        <div class="col">
+          <label>Сумма кредита, ₽</label>
+          <input id="loan-principal" type="number" inputmode="decimal" />
+        </div>
+        <div class="col">
+          <label>Текущий остаток, ₽</label>
+          <input id="loan-balance" type="number" inputmode="decimal" />
+        </div>
+      </div>
+      <div class="row" style="margin-top:8px;">
+        <div class="col">
+          <label>Ставка, % годовых</label>
+          <input id="loan-rate" type="number" inputmode="decimal" />
+        </div>
+        <div class="col">
+          <label>Ежемесячный платёж, ₽</label>
+          <input id="loan-monthly" type="number" inputmode="decimal" />
+        </div>
+        <div class="col">
+          <label>Дата начала</label>
+          <input id="loan-start-date" type="date" />
+        </div>
+      </div>
+      <div style="margin-top:10px; display:flex; justify-content:flex-end; gap:8px;">
+        <button id="loan-add-btn">Сохранить кредит</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Мои кредиты</h3>
+      <div class="list" id="loan-list"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // --- Telegram WebApp integration (не обязательно локально, но важно в мини-аппе) ---
+  (function initTelegram() {
+    if (window.Telegram && window.Telegram.WebApp) {
+      const tg = window.Telegram.WebApp;
+      tg.ready();
+      tg.expand();
+      const user = tg.initDataUnsafe?.user;
+      if (user) {
+        const label = document.getElementById('tg-user-label');
+        label.textContent = `Пользователь: ${user.first_name || ''} ${user.last_name || ''} (@${user.username || ''})`.trim();
+      }
+    } else {
+      document.getElementById('tg-user-label').textContent =
+        'Работает в браузере без Telegram (режим разработки).';
+    }
+  })();
+
+  // --- State & storage ---
+  const STORAGE_KEY = 'finCabinetStateV1';
+
+  let state = {
+    deposits: [],
+    loans: []
+  };
+
+  function loadState() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object') {
+        state = {
+          deposits: Array.isArray(parsed.deposits) ? parsed.deposits : [],
+          loans: Array.isArray(parsed.loans) ? parsed.loans : []
+        };
+      }
+    } catch (e) {
+      console.error('Failed to load state', e);
+    }
+  }
+
+  function saveState() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    renderAll();
+  }
+
+  function formatMoney(x) {
+    if (isNaN(x)) return '—';
+    return new Intl.NumberFormat('ru-RU', {
+      style: 'currency',
+      currency: 'RUB',
+      maximumFractionDigits: 0
+    }).format(x);
+  }
+
+  function formatDate(date) {
+    if (!date) return '—';
+    return date.toLocaleDateString('ru-RU');
+  }
+
+  // --- Business logic ---
+
+  function calcDeposit(deposit) {
+    const amount = Number(deposit.amount) || 0;
+    const rate = Number(deposit.rate_apy) || 0;
+    const termMonths = Number(deposit.term_months) || 0;
+    const start = deposit.start_date ? new Date(deposit.start_date) : null;
+
+    const years = termMonths / 12;
+    const interest = amount * (rate / 100) * years; // простые проценты
+    const finalAmount = amount + interest;
+
+    let endDate = null;
+    if (start && !isNaN(start.getTime())) {
+      endDate = new Date(start.getTime());
+      endDate.setMonth(endDate.getMonth() + termMonths);
+    }
+
+    return { interest, finalAmount, endDate };
+  }
+
+  function calcLoan(loan) {
+    const principal = Number(loan.initial_amount) || 0;
+    const balance = Number(loan.current_balance) || 0;
+    const monthly = Number(loan.monthly_payment) || 0;
+    const rate = Number(loan.rate_apy) || 0;
+    const start = loan.start_date ? new Date(loan.start_date) : null;
+
+    if (balance <= 0 || monthly <= 0) {
+      return { months: 0, payoffDate: null, totalPaid: 0, overpay: 0 };
+    }
+
+    // Грубая оценка: без учёта процентов
+    let months = Math.ceil(balance / monthly);
+
+    // Можно чуть скорректировать на проценты (очень примитивно)
+    if (rate > 0) {
+      months = Math.ceil(months * 1.1); // небольшой запас
+    }
+
+    let payoffDate = null;
+    if (start && !isNaN(start.getTime())) {
+      payoffDate = new Date(start.getTime());
+      payoffDate.setMonth(payoffDate.getMonth() + months);
+    }
+
+    const totalPaid = monthly * months;
+    const overpay = totalPaid - principal;
+
+    return { months, payoffDate, totalPaid, overpay };
+  }
+
+  // --- Rendering ---
+
+  function renderDashboard() {
+    const kpisContainer = document.getElementById('dashboard-kpis');
+    kpisContainer.innerHTML = '';
+
+    const totalDepositPrincipal = state.deposits.reduce((sum, d) => sum + (Number(d.amount) || 0), 0);
+    const totalDepositFinal = state.deposits.reduce((sum, d) => {
+      const { finalAmount } = calcDeposit(d);
+      return sum + finalAmount;
+    }, 0);
+
+    const totalLoanBalance = state.loans.reduce((sum, l) => sum + (Number(l.current_balance) || 0), 0);
+    const totalLoanPrincipal = state.loans.reduce((sum, l) => sum + (Number(l.initial_amount) || 0), 0);
+
+    const netNow = totalDepositPrincipal - totalLoanBalance;
+    const netFuture = totalDepositFinal - totalLoanBalance;
+
+    const kpis = [
+      { label: 'Вклады (сейчас)', value: formatMoney(totalDepositPrincipal) },
+      { label: 'Вклады (в конце срока)', value: formatMoney(totalDepositFinal) },
+      { label: 'Долги (остаток)', value: formatMoney(totalLoanBalance), danger: true },
+      { label: 'Net worth сейчас', value: formatMoney(netNow), cls: netNow >= 0 ? 'success' : 'danger' },
+      { label: 'Net worth в будущем', value: formatMoney(netFuture), cls: netFuture >= 0 ? 'success' : 'danger' }
+    ];
+
+    for (const k of kpis) {
+      const div = document.createElement('div');
+      div.className = 'kpi';
+      div.innerHTML = `
+        <div class="kpi-label">${k.label}</div>
+        <div class="kpi-value ${k.danger ? 'danger' : ''} ${k.cls || ''}">${k.value}</div>
+      `;
+      kpisContainer.appendChild(div);
+    }
+  }
+
+  function renderDeposits() {
+    const list = document.getElementById('dep-list');
+    list.innerHTML = '';
+
+    if (!state.deposits.length) {
+      list.innerHTML = '<div class="muted">Вкладов пока нет</div>';
+      return;
+    }
+
+    state.deposits.forEach((d, idx) => {
+      const { interest, finalAmount, endDate } = calcDeposit(d);
+
+      const div = document.createElement('div');
+      div.className = 'item';
+
+      div.innerHTML = `
+        <div class="item-header">
+          <span>${d.name || 'Без названия'}</span>
+          <span>${formatMoney(Number(d.amount) || 0)}</span>
+        </div>
+        <div class="muted">
+          Ставка: ${d.rate_apy || 0}% • Срок: ${d.term_months || 0} мес
+        </div>
+        <div class="muted">
+          Начало: ${d.start_date || '—'} • Конец: ${formatDate(endDate)}
+        </div>
+        <div class="muted">
+          Доход: <span class="success">${formatMoney(interest)}</span> • В конце срока: <b>${formatMoney(finalAmount)}</b>
+        </div>
+        <div style="margin-top:4px; display:flex; justify-content:flex-end;">
+          <button class="secondary" data-remove-dep="${idx}">Удалить</button>
+        </div>
+      `;
+
+      list.appendChild(div);
+    });
+  }
+
+  function renderLoans() {
+    const list = document.getElementById('loan-list');
+    list.innerHTML = '';
+
+    if (!state.loans.length) {
+      list.innerHTML = '<div class="muted">Кредитов пока нет</div>';
+      return;
+    }
+
+    state.loans.forEach((l, idx) => {
+      const { months, payoffDate, totalPaid, overpay } = calcLoan(l);
+
+      const div = document.createElement('div');
+      div.className = 'item';
+
+      div.innerHTML = `
+        <div class="item-header">
+          <span>${l.name || 'Без названия'}</span>
+          <span>${formatMoney(Number(l.current_balance) || 0)}</span>
+        </div>
+        <div class="muted">
+          Ставка: ${l.rate_apy || 0}% • Платёж: ${formatMoney(Number(l.monthly_payment) || 0)} / мес
+        </div>
+        <div class="muted">
+          Старт: ${l.start_date || '—'} • Ориентир закрытия: ${formatDate(payoffDate)} (${months || 0} мес)
+        </div>
+        <div class="muted">
+          Всего выплат: ${formatMoney(totalPaid)} • Переплата: <span class="${overpay >= 0 ? 'danger' : ''}">${formatMoney(overpay)}</span>
+        </div>
+        <div style="margin-top:4px; display:flex; justify-content:flex-end;">
+          <button class="secondary" data-remove-loan="${idx}">Удалить</button>
+        </div>
+      `;
+
+      list.appendChild(div);
+    });
+  }
+
+  function renderAll() {
+    renderDashboard();
+    renderDeposits();
+    renderLoans();
+  }
+
+  // --- Tabs ---
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const target = tab.getAttribute('data-tab');
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+
+      document.getElementById('tab-deposits').style.display = target === 'deposits' ? '' : 'none';
+      document.getElementById('tab-loans').style.display = target === 'loans' ? '' : 'none';
+    });
+  });
+
+  // --- Handlers: Добавление вкладов ---
+  document.getElementById('dep-add-btn').addEventListener('click', () => {
+    const name = document.getElementById('dep-name').value.trim();
+    const amount = document.getElementById('dep-amount').value;
+    const rate = document.getElementById('dep-rate').value;
+    const termMonths = document.getElementById('dep-term-months').value;
+    const startDate = document.getElementById('dep-start-date').value;
+
+    if (!amount || !rate || !termMonths) {
+      alert('Нужно заполнить сумму, ставку и срок.');
+      return;
+    }
+
+    state.deposits.push({
+      id: Date.now(),
+      name,
+      amount,
+      rate_apy: rate,
+      term_months: termMonths,
+      start_date: startDate
+    });
+
+    // очистка формы
+    document.getElementById('dep-name').value = '';
+    document.getElementById('dep-amount').value = '';
+    document.getElementById('dep-rate').value = '';
+    document.getElementById('dep-term-months').value = '';
+    document.getElementById('dep-start-date').value = '';
+
+    saveState();
+  });
+
+  // --- Handlers: Добавление кредитов ---
+  document.getElementById('loan-add-btn').addEventListener('click', () => {
+    const name = document.getElementById('loan-name').value.trim();
+    const principal = document.getElementById('loan-principal').value;
+    let balance = document.getElementById('loan-balance').value;
+    const rate = document.getElementById('loan-rate').value;
+    const monthly = document.getElementById('loan-monthly').value;
+    const startDate = document.getElementById('loan-start-date').value;
+
+    if (!principal || !monthly) {
+      alert('Нужно заполнить сумму кредита и платёж.');
+      return;
+    }
+
+    if (!balance) {
+      balance = principal;
+    }
+
+    state.loans.push({
+      id: Date.now(),
+      name,
+      initial_amount: principal,
+      current_balance: balance,
+      rate_apy: rate,
+      monthly_payment: monthly,
+      start_date: startDate
+    });
+
+    document.getElementById('loan-name').value = '';
+    document.getElementById('loan-principal').value = '';
+    document.getElementById('loan-balance').value = '';
+    document.getElementById('loan-rate').value = '';
+    document.getElementById('loan-monthly').value = '';
+    document.getElementById('loan-start-date').value = '';
+
+    saveState();
+  });
+
+  // --- Delegated delete handlers ---
+  document.getElementById('dep-list').addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-remove-dep]');
+    if (!btn) return;
+    const idx = Number(btn.getAttribute('data-remove-dep'));
+    if (!isNaN(idx)) {
+      state.deposits.splice(idx, 1);
+      saveState();
+    }
+  });
+
+  document.getElementById('loan-list').addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-remove-loan]');
+    if (!btn) return;
+    const idx = Number(btn.getAttribute('data-remove-loan'));
+    if (!isNaN(idx)) {
+      state.loans.splice(idx, 1);
+      saveState();
+    }
+  });
+
+  // --- Init ---
+  loadState();
+  renderAll();
+</script>
+</body>
+</html>
