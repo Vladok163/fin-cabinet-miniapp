@@ -335,10 +335,22 @@
       50% { box-shadow: 0 0 0 4px rgba(59,130,246,0.35); }
     }
 
-    @media (max-width: 600px) {
-      .row { flex-direction: column; }
-      .app { margin-bottom: 16px; }
-    }
+.row-full .col {
+  flex: 1 1 100%;
+}
+
+/* Мобильная адаптация: строки остаются в несколько столбцов */
+@media (max-width: 600px) {
+  .col {
+    flex: 1 1 48%;   /* максимум 2 поля в строке, третье перенесётся вниз */
+  }
+  .row {
+    gap: 4px;
+  }
+  .app {
+    margin-bottom: 16px;
+  }
+}
   </style>
 </head>
 <body>
