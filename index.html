@@ -16,7 +16,9 @@
       --border: rgba(148,163,184,0.25);
       --danger: #f97373;
       --success: #4ade80;
+      --transition-bounce: cubic-bezier(0.68,-0.55,0.27,1.55);
     }
+
     * { box-sizing: border-box; }
 
     body {
@@ -59,7 +61,7 @@
       display: flex;
       flex-wrap: wrap;
       gap: 6px;
-      margin-bottom: 4px;
+      margin-bottom: 2px; /* уменьшил отступ между строками */
     }
     .col {
       flex: 1 1 220px;
@@ -75,7 +77,7 @@
 
     input, select {
       width: 100%;
-      padding: 5px 7px;
+      padding: 4px 7px; /* чуть компактнее */
       border-radius: 8px;
       border: 1px solid #4b5563;
       background: #020617;
@@ -118,6 +120,11 @@
       border: 1px solid #1f2937;
       margin-bottom: 5px;
       font-size: 13px;
+      opacity: 0;
+      animation: fadeInUp 0.3s ease-out forwards;
+    }
+    .item.new-add {
+      animation: slideInRight 0.35s var(--transition-bounce) forwards, highlightPulse 0.8s ease-out;
     }
 
     .item-header {
@@ -139,7 +146,7 @@
       border-radius: 999px;
       font-size: 11px;
       background: #1f2937;
-      color: var(--text);
+      color: #f9fafb;
       margin-left: 4px;
     }
 
@@ -220,6 +227,114 @@
       user-select: none;
     }
 
+    /* Предпросмотр вклада */
+    .dep-preview {
+      margin-top: 6px;
+      border-radius: 8px;
+      border: 1px dashed var(--border);
+      padding: 6px;
+      font-size: 12px;
+    }
+    .dep-preview-title {
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+    .dep-preview-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .dep-preview-item {
+      flex: 1 1 120px;
+      min-width: 0;
+    }
+    .dep-preview-label {
+      color: var(--muted);
+      font-size: 11px;
+      margin-bottom: 1px;
+    }
+    .dep-preview-value {
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .form-actions {
+      margin-top: 6px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 6px;
+    }
+
+    /* Пустое состояние */
+    .empty-state {
+      text-align: left;
+      padding: 6px;
+      border-radius: 8px;
+      border: 1px dashed var(--border);
+      background: #020617;
+      font-size: 13px;
+    }
+    .empty-state h3 {
+      margin: 0 0 4px;
+      font-size: 14px;
+    }
+    .empty-state-description {
+      margin: 0 0 6px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .suggestion-card {
+      border-radius: 8px;
+      border: 1px solid #1f2937;
+      padding: 6px;
+      margin-top: 4px;
+    }
+    .suggestion-header {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-bottom: 2px;
+      font-size: 13px;
+    }
+    .suggestion-emoji {
+      font-size: 14px;
+    }
+    .btn-suggestion {
+      margin-top: 4px;
+      padding: 4px 8px;
+      font-size: 12px;
+      border-radius: 999px;
+      border: none;
+      background: #3b82f6;
+      color: #f9fafb;
+      cursor: pointer;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    @keyframes slideInRight {
+      from {
+        opacity: 0;
+        transform: translateX(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    @keyframes highlightPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(59,130,246,0); }
+      50% { box-shadow: 0 0 0 4px rgba(59,130,246,0.35); }
+    }
+
     @media (max-width: 600px) {
       .row { flex-direction: column; }
       .app { margin-bottom: 16px; }
@@ -231,8 +346,9 @@
   <h1>Твой финкабинет</h1>
   <p class="subtitle" id="tg-user-label"></p>
 
+  <!-- ДАШБОРД 2.0 -->
   <div class="card">
-    <h2>Дашборд</h2>
+    <h2>Финансовая панорама</h2>
     <div class="kpi-row" id="dashboard-kpis-main"></div>
     <div id="dashboard-details-toggle" class="details-toggle">
       Показать детали
@@ -283,7 +399,28 @@
           <input id="dep-start-date" type="date" />
         </div>
       </div>
-      <div style="margin-top:6px; display:flex; justify-content:flex-end; gap:6px;">
+
+      <!-- ПРЕДПРОСМОТР ВКЛАДА -->
+      <div class="dep-preview" id="dep-preview" style="display:none;">
+        <div class="dep-preview-title">Предварительный расчет</div>
+        <div class="dep-preview-grid">
+          <div class="dep-preview-item">
+            <div class="dep-preview-label">Будущая сумма</div>
+            <div class="dep-preview-value" id="dep-preview-future">—</div>
+          </div>
+          <div class="dep-preview-item">
+            <div class="dep-preview-label">Доход всего</div>
+            <div class="dep-preview-value success" id="dep-preview-profit">—</div>
+          </div>
+          <div class="dep-preview-item">
+            <div class="dep-preview-label">Средний доход / мес</div>
+            <div class="dep-preview-value" id="dep-preview-monthly">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="secondary" id="dep-reset-btn">Очистить</button>
         <button id="dep-add-btn">Сохранить вклад</button>
       </div>
     </div>
@@ -326,7 +463,7 @@
           <input id="loan-start-date" type="date" />
         </div>
       </div>
-      <div style="margin-top:6px; display:flex; justify-content:flex-end; gap:6px;">
+      <div class="form-actions">
         <button id="loan-add-btn">Сохранить кредит</button>
       </div>
     </div>
@@ -375,7 +512,7 @@
           </select>
         </div>
       </div>
-      <div style="margin-top:6px; display:flex; justify-content:flex-end; gap:6px;">
+      <div class="form-actions">
         <button id="inc-add-btn">Сохранить доход</button>
       </div>
     </div>
@@ -390,6 +527,7 @@
 <script>
   const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
   let currentTab = 'deposits';
+  let lastAdded = { type: null, id: null };
 
   // --- Theme from Telegram ---
   (function applyTheme() {
@@ -525,7 +663,10 @@
       }
     }
 
-    return { interest, finalAmount, endDate };
+    const months = years * 12;
+    const monthlyProfit = months > 0 ? interest / months : 0;
+
+    return { interest, finalAmount, endDate, months, monthlyProfit };
   }
 
   // --- Business logic: loans ---
@@ -574,7 +715,7 @@
     }
   }
 
-  // --- DASHBOARD ---
+  // --- DASHBOARD 2.0 ---
   function renderDashboard() {
     const mainEl = document.getElementById('dashboard-kpis-main');
     const extraEl = document.getElementById('dashboard-kpis-extra');
@@ -623,10 +764,22 @@
         cls: netNow >= 0 ? 'success' : 'danger'
       },
       {
-        label: 'Net worth в будущем',
-        value: formatMoney(netFuture),
-        cls: netFuture >= 0 ? 'success' : 'danger'
+        label: 'Чистый поток / мес',
+        value: formatMoney(cashFlow),
+        cls: cashFlow >= 0 ? 'success' : 'danger'
       },
+      {
+        label: 'Долговая нагрузка (DTI)',
+        value: dti === null ? '—' : (dti * 100).toFixed(0) + '%',
+        cls: dti == null ? '' : dti < 0.3 ? 'success' : dti < 0.5 ? '' : 'danger'
+      }
+    ];
+
+    const extraKpis = [
+      { label: 'Вклады (сейчас)', value: formatMoney(totalDepositPrincipal) },
+      { label: 'Вклады (в конце срока)', value: formatMoney(totalDepositFinal) },
+      { label: 'Долги (остаток)', value: formatMoney(totalLoanBalance), cls: totalLoanBalance > 0 ? 'danger' : '' },
+      { label: 'Долги (изначально)', value: formatMoney(totalLoanPrincipal) },
       {
         label: 'Доходы / мес',
         value: formatMoney(totalMonthlyIncome),
@@ -638,21 +791,9 @@
         cls: totalLoanMonthlyPayment > 0 ? 'danger' : ''
       },
       {
-        label: 'Чистый поток / мес',
-        value: formatMoney(cashFlow),
-        cls: cashFlow >= 0 ? 'success' : 'danger'
-      }
-    ];
-
-    const extraKpis = [
-      { label: 'Вклады (сейчас)', value: formatMoney(totalDepositPrincipal) },
-      { label: 'Вклады (в конце срока)', value: formatMoney(totalDepositFinal) },
-      { label: 'Долги (остаток)', value: formatMoney(totalLoanBalance), cls: totalLoanBalance > 0 ? 'danger' : '' },
-      { label: 'Долги (изначально)', value: formatMoney(totalLoanPrincipal) },
-      {
-        label: 'Долговая нагрузка (DTI)',
-        value: dti === null ? '—' : (dti * 100).toFixed(0) + '%',
-        cls: dti == null ? '' : dti < 0.3 ? 'success' : dti < 0.5 ? '' : 'danger'
+        label: 'Net worth в будущем',
+        value: formatMoney(netFuture),
+        cls: netFuture >= 0 ? 'success' : 'danger'
       }
     ];
 
@@ -672,22 +813,41 @@
     renderKpis(extraKpis, extraEl);
   }
 
-  // --- Deposits list ---
+  // --- Deposits list + empty state ---
   function renderDeposits() {
     const list = document.getElementById('dep-list');
     list.innerHTML = '';
 
     if (!state.deposits.length) {
-      list.innerHTML = '<div class="muted">Вкладов пока нет. Добавь первый выше.</div>';
+      list.innerHTML = `
+        <div class="empty-state">
+          <h3>Капитал в ожидании</h3>
+          <p class="empty-state-description">
+            Здесь будут ваши вклады. Начните с первого — это займёт меньше минуты.
+          </p>
+          <div class="suggestion-card" data-suggestion="deposit-50k">
+            <div class="suggestion-header">
+              <span class="suggestion-emoji">🚀</span>
+              <strong>Быстрый старт</strong>
+            </div>
+            <p>Вклад 50 000 ₽ на 6 месяцев под 8% годовых.</p>
+            <button class="btn-suggestion" onclick="applyDepositSuggestion(50000, 8, 6)">
+              Применить шаблон
+            </button>
+          </div>
+        </div>
+      `;
+      document.getElementById('tab-btn-deposits').textContent = `Вклады (0)`;
       return;
     }
 
     state.deposits.forEach((d, idx) => {
       const { interest, finalAmount, endDate } = calcDeposit(d);
       const unitLabel = d.term_unit === 'weeks' ? 'нед.' : 'мес.';
+      const isNew = lastAdded.type === 'dep' && lastAdded.id === d.id;
 
       const div = document.createElement('div');
-      div.className = 'item';
+      div.className = 'item' + (isNew ? ' new-add' : '');
 
       div.innerHTML = `
         <div class="item-header">
@@ -712,7 +872,6 @@
       list.appendChild(div);
     });
 
-    // бейджи с количеством
     document.getElementById('tab-btn-deposits').textContent = `Вклады (${state.deposits.length})`;
   }
 
@@ -723,14 +882,16 @@
 
     if (!state.loans.length) {
       list.innerHTML = '<div class="muted">Кредитов пока нет. Добавь первый выше.</div>';
+      document.getElementById('tab-btn-loans').textContent = `Кредиты (0)`;
       return;
     }
 
     state.loans.forEach((l, idx) => {
       const { months, payoffDate, totalPaid, overpay, progress } = calcLoan(l);
+      const isNew = lastAdded.type === 'loan' && lastAdded.id === l.id;
 
       const div = document.createElement('div');
-      div.className = 'item';
+      div.className = 'item' + (isNew ? ' new-add' : '');
 
       const pct = Math.max(0, Math.min(100, Math.round(progress * 100)));
 
@@ -771,6 +932,7 @@
 
     if (!state.incomes.length) {
       list.innerHTML = '<div class="muted">Доходов пока нет. Добавь первый выше.</div>';
+      document.getElementById('tab-btn-incomes').textContent = `Доходы (0)`;
       return;
     }
 
@@ -789,9 +951,10 @@
 
     state.incomes.forEach((inc, idx) => {
       const monthly = calcIncomeMonthly(inc);
+      const isNew = lastAdded.type === 'inc' && lastAdded.id === inc.id;
 
       const div = document.createElement('div');
-      div.className = 'item';
+      div.className = 'item' + (isNew ? ' new-add' : '');
 
       div.innerHTML = `
         <div class="item-header">
@@ -866,6 +1029,49 @@
       opened ? 'Показать детали' : 'Скрыть детали';
   });
 
+  // --- Deposit preview ---
+  function updateDepositPreview() {
+    const amount = parseFloat(document.getElementById('dep-amount').value) || 0;
+    const rate = parseFloat(document.getElementById('dep-rate').value) || 0;
+    const termValue = parseFloat(document.getElementById('dep-term-value').value) || 0;
+    const termUnit = document.getElementById('dep-term-unit').value;
+    const preview = document.getElementById('dep-preview');
+
+    if (amount > 0 && rate > 0 && termValue > 0) {
+      let months = termUnit === 'weeks' ? termValue / 4.345 : termValue;
+      if (months <= 0) months = 0;
+      const years = months / 12;
+      const interest = amount * (rate / 100) * years;
+      const future = amount + interest;
+      const monthly = months > 0 ? interest / months : 0;
+
+      document.getElementById('dep-preview-future').textContent =
+        formatMoney(Math.round(future));
+      document.getElementById('dep-preview-profit').textContent =
+        '+' + formatMoney(Math.round(interest)).replace('₽', '').trim() + ' ₽';
+      document.getElementById('dep-preview-monthly').textContent =
+        formatMoney(Math.round(monthly)) + '/мес';
+
+      preview.style.display = 'block';
+    } else {
+      preview.style.display = 'none';
+    }
+  }
+
+  ['dep-amount', 'dep-rate', 'dep-term-value', 'dep-term-unit'].forEach(id => {
+    document.getElementById(id).addEventListener('input', updateDepositPreview);
+  });
+
+  document.getElementById('dep-reset-btn').addEventListener('click', () => {
+    document.getElementById('dep-name').value = '';
+    document.getElementById('dep-amount').value = '';
+    document.getElementById('dep-rate').value = '';
+    document.getElementById('dep-term-value').value = '';
+    document.getElementById('dep-term-unit').value = 'months';
+    setDefaultDate('dep-start-date');
+    document.getElementById('dep-preview').style.display = 'none';
+  });
+
   // --- Handlers: add deposit ---
   document.getElementById('dep-add-btn').addEventListener('click', () => {
     const name = document.getElementById('dep-name').value.trim();
@@ -885,8 +1091,9 @@
     if (!termValue) { showFieldError(termValEl, 'Укажи срок'); ok = false; }
     if (!ok) return;
 
+    const id = Date.now();
     state.deposits.push({
-      id: Date.now(),
+      id,
       name,
       amount,
       rate_apy: rate,
@@ -895,12 +1102,15 @@
       start_date: startDate
     });
 
+    lastAdded = { type: 'dep', id };
+
     document.getElementById('dep-name').value = '';
     amountEl.value = '';
     rateEl.value = '';
     termValEl.value = '';
     document.getElementById('dep-term-unit').value = 'months';
     setDefaultDate('dep-start-date');
+    document.getElementById('dep-preview').style.display = 'none';
 
     saveState();
   });
@@ -926,8 +1136,9 @@
 
     if (!balance) balance = principal;
 
+    const id = Date.now();
     state.loans.push({
-      id: Date.now(),
+      id,
       name,
       initial_amount: principal,
       current_balance: balance,
@@ -935,6 +1146,8 @@
       monthly_payment: monthly,
       start_date: startDate
     });
+
+    lastAdded = { type: 'loan', id };
 
     document.getElementById('loan-name').value = '';
     principalEl.value = '';
@@ -960,14 +1173,17 @@
       return;
     }
 
+    const id = Date.now();
     state.incomes.push({
-      id: Date.now(),
+      id,
       name,
       type,
       amount,
       date,
       frequency: freq
     });
+
+    lastAdded = { type: 'inc', id };
 
     document.getElementById('inc-name').value = '';
     amountEl.value = '';
@@ -1021,6 +1237,18 @@
     }
   });
 
+  // --- Шаблон быстрого вклада ---
+  function applyDepositSuggestion(amount, rate, months) {
+    document.getElementById('dep-amount').value = amount;
+    document.getElementById('dep-rate').value = rate;
+    document.getElementById('dep-term-value').value = months;
+    document.getElementById('dep-term-unit').value = 'months';
+    updateDepositPreview();
+    document.getElementById('dep-name').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    document.getElementById('dep-name').focus();
+  }
+  window.applyDepositSuggestion = applyDepositSuggestion;
+
   // --- Init ---
   loadState();
   renderAll();
@@ -1028,5 +1256,3 @@
 </script>
 </body>
 </html>
-
-
