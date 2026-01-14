@@ -28,8 +28,9 @@
       color: var(--text);
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       font-size: 14px;
+      color-scheme: light dark;
     }
-
+    
     .app {
       max-width: 960px;
       margin: 0 auto 24px;
@@ -84,8 +85,8 @@
       width: 100%;
       padding: 4px 7px;
       border-radius: 8px;
-      border: 1px solid #4b5563;
-      background: #020617;
+      border: 1px solid rgba(148,163,184,0.6);
+      background: var(--card-bg);   /* ← вместо хардкода чёрного */
       color: var(--text);
       font-size: 13px;
       line-height: 1.2;
@@ -93,6 +94,10 @@
     input:focus, select:focus {
       outline: 2px solid var(--accent);
       border-color: var(--accent);
+    }
+    input::placeholder {
+      color: var(--muted);
+      opacity: 0.85;
     }
 
     button {
@@ -852,7 +857,24 @@
         direction: 'in'
       });
     });
+    state.deposits.forEach(d => {
+      const { finalAmount, endDate } = calcDeposit(d);
+      if (!endDate) return;
 
+  // если конец срока не попадает в окно 30 дней — пропускаем
+      if (endDate < now || endDate > end) return;
+
+  // если хочешь показывать только для payout_type === 'end':
+  // if (d.payout_type !== 'end') return;
+
+      events.push({
+        type: 'deposit_maturity',
+        title: d.name || 'Вклад',
+        date: endDate.toISOString().slice(0, 10),
+        amount: Math.round(finalAmount),
+        direction: 'in'
+      });
+    });
     // Кредиты
     state.loans.forEach(l => {
       if (!l.monthly_payment) return;
@@ -958,6 +980,25 @@
 
     state.deposits.forEach((d, idx) => {
       const { interest, finalAmount, endDate } = calcDeposit(d);
+      let nextPayoutText = '—';
+      if (d.payout_type === 'monthly' && d.start_date) {
+        const start = new Date(d.start_date);
+        if (!isNaN(start)) {
+        const now = new Date();
+        const day = start.getDate();
+        let next = new Date(now);
+        next.setDate(day);
+        if (next < now) next.setMonth(next.getMonth() + 1);
+
+        const { months } = calcDeposit(d);
+        const monthlyProfit = months > 0 ? interest / months : 0;
+
+        nextPayoutText = `${formatDate(next)} · ~${formatMoney(Math.round(monthlyProfit))}`;
+      }
+    } else if (endDate) {
+  // единоразовое погашение
+      nextPayoutText = `${formatDate(endDate)} · ~${formatMoney(Math.round(finalAmount))}`;
+    }
       const unitLabel = d.term_unit === 'weeks' ? 'нед.' : 'мес.';
       const payLabel = d.payout_type === 'monthly' ? 'ежемесячно' : 'в конце срока';
       const isNew = lastAdded.type === 'dep' && lastAdded.id === d.id;
@@ -976,6 +1017,7 @@
           Начало: ${d.start_date || '—'} • Конец: ${formatDate(endDate)}
         </div>
         <div class="muted">
+          Ближайшая выплата: ${nextPayoutText}
           Доход: <span class="success">${formatMoney(interest)}</span> •
           В конце срока: <b>${formatMoney(finalAmount)}</b>
         </div>
