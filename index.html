@@ -379,38 +379,52 @@
   <!-- ВКЛАДЫ -->
   <div id="tab-deposits">
     <div class="card">
-      <h3>Добавить вклад</h3>
-      <div class="row">
-        <div class="col">
-          <label>Название</label>
-          <input id="dep-name" placeholder="Вклад 10% на 6 мес" />
-        </div>
-        <div class="col">
-          <label>Сумма, ₽</label>
-          <input id="dep-amount" type="number" inputmode="decimal" placeholder="Напр. 300000" />
-        </div>
-        <div class="col">
-          <label>Ставка, % годовых</label>
-          <input id="dep-rate" type="number" inputmode="decimal" placeholder="Напр. 12" />
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <label>Срок</label>
-          <input id="dep-term-value" type="number" inputmode="numeric" placeholder="Напр. 6" />
-        </div>
-        <div class="col">
-          <label>Единица срока</label>
-          <select id="dep-term-unit">
-            <option value="months">месяцев</option>
-            <option value="weeks">недель</option>
-          </select>
-        </div>
-        <div class="col">
-          <label>Дата начала</label>
-          <input id="dep-start-date" type="date" />
-        </div>
-      </div>
+  <h3>Добавить вклад</h3>
+
+  <!-- Имя вклада на всю ширину -->
+  <div class="row row-full">
+    <div class="col">
+      <label>Название</label>
+      <input id="dep-name" placeholder="Вклад 10% на 6 мес" />
+    </div>
+  </div>
+
+  <!-- Сумма + ставка в одной строке -->
+  <div class="row">
+    <div class="col">
+      <label>Сумма, ₽</label>
+      <input id="dep-amount" type="number" inputmode="decimal" placeholder="Напр. 300000" />
+    </div>
+    <div class="col">
+      <label>Ставка, % годовых</label>
+      <input id="dep-rate" type="number" inputmode="decimal" placeholder="Напр. 12" />
+    </div>
+  </div>
+
+  <!-- Срок + единица + дата в одной строке -->
+  <div class="row">
+    <div class="col">
+      <label>Срок</label>
+      <input id="dep-term-value" type="number" inputmode="numeric" placeholder="Напр. 6" />
+    </div>
+    <div class="col">
+      <label>Единица срока</label>
+      <select id="dep-term-unit">
+        <option value="months">месяцев</option>
+        <option value="weeks">недель</option>
+      </select>
+    </div>
+    <div class="col">
+      <label>Дата начала</label>
+      <input id="dep-start-date" type="date" />
+    </div>
+  </div>
+
+  <!-- дальше остаётся как было: предпросмотр + кнопки -->
+  <!-- ... dep-preview ... -->
+  <!-- ... form-actions ... -->
+</div>
+
 
       <!-- ПРЕДПРОСМОТР ВКЛАДА -->
       <div class="dep-preview" id="dep-preview" style="display:none;">
