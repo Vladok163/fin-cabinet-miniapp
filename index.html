@@ -61,11 +61,16 @@
       display: flex;
       flex-wrap: wrap;
       gap: 6px;
-      margin-bottom: 2px; /* уменьшил отступ между строками */
+      margin-bottom: 2px;
     }
     .col {
       flex: 1 1 220px;
       min-width: 0;
+    }
+
+    /* строка на всю ширину */
+    .row-full .col {
+      flex: 1 1 100%;
     }
 
     label {
@@ -77,7 +82,7 @@
 
     input, select {
       width: 100%;
-      padding: 4px 7px; /* чуть компактнее */
+      padding: 4px 7px;
       border-radius: 8px;
       border: 1px solid #4b5563;
       background: #020617;
@@ -311,46 +316,23 @@
     }
 
     @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(6px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
     @keyframes slideInRight {
-      from {
-        opacity: 0;
-        transform: translateX(12px);
-      }
-      to {
-        opacity: 1;
-        transform: translateX(0);
-      }
+      from { opacity: 0; transform: translateX(12px); }
+      to   { opacity: 1; transform: translateX(0); }
     }
     @keyframes highlightPulse {
       0%, 100% { box-shadow: 0 0 0 0 rgba(59,130,246,0); }
       50% { box-shadow: 0 0 0 4px rgba(59,130,246,0.35); }
     }
 
-.row-full .col {
-  flex: 1 1 100%;
-}
-
-/* Мобильная адаптация: строки остаются в несколько столбцов */
-@media (max-width: 600px) {
-  .col {
-    flex: 1 1 48%;   /* максимум 2 поля в строке, третье перенесётся вниз */
-  }
-  .row {
-    gap: 4px;
-  }
-  .app {
-    margin-bottom: 16px;
-  }
-}
+    @media (max-width: 600px) {
+      .col { flex: 1 1 48%; }   /* максимум 2 поля в ряд, третье переносится */
+      .row { gap: 4px; }
+      .app { margin-bottom: 16px; }
+    }
   </style>
 </head>
 <body>
@@ -370,61 +352,76 @@
     </div>
   </div>
 
+  <!-- БЛИЖАЙШИЕ ВЫПЛАТЫ -->
+  <div class="card">
+    <h3>Ближайшие выплаты (30 дней)</h3>
+    <div class="list" id="events-list"></div>
+    <div class="form-actions" style="margin-top:6px; justify-content:space-between;">
+      <span class="muted" id="events-hint"></span>
+      <button id="events-send-btn">Отправить в бота</button>
+    </div>
+  </div>
+
   <div class="tabs">
-    <div class="tab active" data-tab="deposits" id="tab-btn-deposits">Вклады</div>
-    <div class="tab" data-tab="loans" id="tab-btn-loans">Кредиты</div>
-    <div class="tab" data-tab="incomes" id="tab-btn-incomes">Доходы</div>
+    <div class="tab active" data-tab="deposits" id="tab-btn-deposits">Вклады (0)</div>
+    <div class="tab" data-tab="loans" id="tab-btn-loans">Кредиты (0)</div>
+    <div class="tab" data-tab="incomes" id="tab-btn-incomes">Доходы (0)</div>
   </div>
 
   <!-- ВКЛАДЫ -->
   <div id="tab-deposits">
     <div class="card">
-  <h3>Добавить вклад</h3>
+      <h3>Добавить вклад</h3>
 
-  <!-- Имя вклада на всю ширину -->
-  <div class="row row-full">
-    <div class="col">
-      <label>Название</label>
-      <input id="dep-name" placeholder="Вклад 10% на 6 мес" />
-    </div>
-  </div>
+      <!-- имя -->
+      <div class="row row-full">
+        <div class="col">
+          <label>Название</label>
+          <input id="dep-name" placeholder="Вклад 10% на 6 мес" />
+        </div>
+      </div>
 
-  <!-- Сумма + ставка в одной строке -->
-  <div class="row">
-    <div class="col">
-      <label>Сумма, ₽</label>
-      <input id="dep-amount" type="number" inputmode="decimal" placeholder="Напр. 300000" />
-    </div>
-    <div class="col">
-      <label>Ставка, % годовых</label>
-      <input id="dep-rate" type="number" inputmode="decimal" placeholder="Напр. 12" />
-    </div>
-  </div>
+      <!-- сумма + ставка -->
+      <div class="row">
+        <div class="col">
+          <label>Сумма, ₽</label>
+          <input id="dep-amount" type="number" inputmode="decimal" placeholder="Напр. 300000" />
+        </div>
+        <div class="col">
+          <label>Ставка, % годовых</label>
+          <input id="dep-rate" type="number" inputmode="decimal" placeholder="Напр. 12" />
+        </div>
+      </div>
 
-  <!-- Срок + единица + дата в одной строке -->
-  <div class="row">
-    <div class="col">
-      <label>Срок</label>
-      <input id="dep-term-value" type="number" inputmode="numeric" placeholder="Напр. 6" />
-    </div>
-    <div class="col">
-      <label>Единица срока</label>
-      <select id="dep-term-unit">
-        <option value="months">месяцев</option>
-        <option value="weeks">недель</option>
-      </select>
-    </div>
-    <div class="col">
-      <label>Дата начала</label>
-      <input id="dep-start-date" type="date" />
-    </div>
-  </div>
+      <!-- срок + единица + выплата процентов -->
+      <div class="row">
+        <div class="col">
+          <label>Срок</label>
+          <input id="dep-term-value" type="number" inputmode="numeric" placeholder="Напр. 6" />
+        </div>
+        <div class="col">
+          <label>Единица срока</label>
+          <select id="dep-term-unit">
+            <option value="months">месяцев</option>
+            <option value="weeks">недель</option>
+          </select>
+        </div>
+        <div class="col">
+          <label>Выплата процентов</label>
+          <select id="dep-payout-type">
+            <option value="end">В конце срока</option>
+            <option value="monthly">Ежемесячно</option>
+          </select>
+        </div>
+      </div>
 
-  <!-- дальше остаётся как было: предпросмотр + кнопки -->
-  <!-- ... dep-preview ... -->
-  <!-- ... form-actions ... -->
-
-
+      <!-- дата начала -->
+      <div class="row row-full">
+        <div class="col">
+          <label>Дата начала</label>
+          <input id="dep-start-date" type="date" />
+        </div>
+      </div>
 
       <!-- ПРЕДПРОСМОТР ВКЛАДА -->
       <div class="dep-preview" id="dep-preview" style="display:none;">
@@ -461,6 +458,7 @@
   <div id="tab-loans" style="display:none;">
     <div class="card">
       <h3>Добавить кредит</h3>
+
       <div class="row">
         <div class="col">
           <label>Название</label>
@@ -475,6 +473,7 @@
           <input id="loan-balance" type="number" inputmode="decimal" placeholder="если пусто = сумма" />
         </div>
       </div>
+
       <div class="row">
         <div class="col">
           <label>Ставка, % годовых</label>
@@ -485,10 +484,18 @@
           <input id="loan-monthly" type="number" inputmode="decimal" placeholder="Напр. 15000" />
         </div>
         <div class="col">
+          <label>День платежа (1–31)</label>
+          <input id="loan-payday" type="number" min="1" max="31" inputmode="numeric" placeholder="Напр. 25" />
+        </div>
+      </div>
+
+      <div class="row row-full">
+        <div class="col">
           <label>Дата начала</label>
           <input id="loan-start-date" type="date" />
         </div>
       </div>
+
       <div class="form-actions">
         <button id="loan-add-btn">Сохранить кредит</button>
       </div>
@@ -504,6 +511,7 @@
   <div id="tab-incomes" style="display:none;">
     <div class="card">
       <h3>Добавить доход</h3>
+
       <div class="row">
         <div class="col">
           <label>Название</label>
@@ -523,21 +531,27 @@
           <input id="inc-amount" type="number" inputmode="decimal" placeholder="Напр. 120000" />
         </div>
       </div>
+
       <div class="row">
         <div class="col">
-          <label>Дата</label>
+          <label>Дата (для разового)</label>
           <input id="inc-date" type="date" />
         </div>
         <div class="col">
           <label>Частота</label>
           <select id="inc-frequency">
+            <option value="monthly" selected>Ежемесячно</option>
             <option value="once">Разово</option>
-            <option value="monthly">Ежемесячно</option>
             <option value="weekly">Еженедельно</option>
             <option value="yearly">Ежегодно</option>
           </select>
         </div>
+        <div class="col">
+          <label>День поступления (1–31)</label>
+          <input id="inc-payday" type="number" min="1" max="31" inputmode="numeric" placeholder="Напр. 5" />
+        </div>
       </div>
+
       <div class="form-actions">
         <button id="inc-add-btn">Сохранить доход</button>
       </div>
@@ -554,13 +568,19 @@
   const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
   let currentTab = 'deposits';
   let lastAdded = { type: null, id: null };
+  const STORAGE_KEY = 'finCabinetStateV4';
 
-  // --- Theme from Telegram ---
+  let state = {
+    deposits: [],
+    loans: [],
+    incomes: []
+  };
+
+  // ---------- THEME ----------
   (function applyTheme() {
     if (!tg) return;
     const tp = tg.themeParams || {};
     const root = document.documentElement;
-
     if (tp.bg_color) root.style.setProperty('--bg', tp.bg_color);
     if (tp.secondary_bg_color) root.style.setProperty('--card-bg', tp.secondary_bg_color);
     if (tp.text_color) root.style.setProperty('--text', tp.text_color);
@@ -569,7 +589,7 @@
     if (tp.button_text_color) root.style.setProperty('--accent-text', tp.button_text_color);
   })();
 
-  // --- Telegram init ---
+  // ---------- TELEGRAM INIT ----------
   (function initTelegram() {
     if (tg) {
       tg.ready();
@@ -587,37 +607,7 @@
     }
   })();
 
-  // --- State & storage ---
-  const STORAGE_KEY = 'finCabinetStateV3';
-
-  let state = {
-    deposits: [],
-    loans: [],
-    incomes: []
-  };
-
-  function loadState() {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return;
-      const parsed = JSON.parse(raw);
-      if (parsed && typeof parsed === 'object') {
-        state = {
-          deposits: Array.isArray(parsed.deposits) ? parsed.deposits : [],
-          loans: Array.isArray(parsed.loans) ? parsed.loans : [],
-          incomes: Array.isArray(parsed.incomes) ? parsed.incomes : []
-        };
-      }
-    } catch (e) {
-      console.error('Failed to load state', e);
-    }
-  }
-
-  function saveState() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    renderAll();
-  }
-
+  // ---------- UTIL ----------
   function formatMoney(x) {
     if (isNaN(x)) return '—';
     return new Intl.NumberFormat('ru-RU', {
@@ -643,7 +633,6 @@
 
   ['dep-start-date', 'loan-start-date', 'inc-date'].forEach(setDefaultDate);
 
-  // --- Inline errors ---
   function showFieldError(inputEl, msg) {
     if (!inputEl) return;
     let err = inputEl.parentElement.querySelector('.field-error');
@@ -661,7 +650,46 @@
     }, 2500);
   }
 
-  // --- Business logic: deposits ---
+  // ---------- STATE & "BACKEND" ЗАГЛУШКА ----------
+  function loadState() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === 'object') {
+          state = {
+            deposits: Array.isArray(parsed.deposits) ? parsed.deposits : [],
+            loans: Array.isArray(parsed.loans) ? parsed.loans : [],
+            incomes: Array.isArray(parsed.incomes) ? parsed.incomes : []
+          };
+        }
+      }
+    } catch (e) {
+      console.error('Failed to load state', e);
+    }
+  }
+
+  function sendStateToBot(reason = 'update') {
+    if (!tg) return; // работает только в мини-аппе
+    try {
+      const payload = {
+        type: 'state_update',
+        reason,
+        state
+      };
+      tg.sendData(JSON.stringify(payload));
+    } catch (e) {
+      console.warn('sendStateToBot error', e);
+    }
+  }
+
+  function saveState(reason = 'update') {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    renderAll();
+    sendStateToBot(reason); // заглушка под бэк
+  }
+
+  // ---------- BUSINESS LOGIC ----------
   function calcDeposit(deposit) {
     const amount = Number(deposit.amount) || 0;
     const rate = Number(deposit.rate_apy) || 0;
@@ -670,11 +698,8 @@
     const start = deposit.start_date ? new Date(deposit.start_date) : null;
 
     let years = 0;
-    if (termUnit === 'weeks') {
-      years = termValue / 52;
-    } else {
-      years = termValue / 12;
-    }
+    if (termUnit === 'weeks') years = termValue / 52;
+    else years = termValue / 12;
 
     const interest = amount * (rate / 100) * years;
     const finalAmount = amount + interest;
@@ -682,11 +707,8 @@
     let endDate = null;
     if (start && !isNaN(start.getTime())) {
       endDate = new Date(start.getTime());
-      if (termUnit === 'weeks') {
-        endDate.setDate(endDate.getDate() + termValue * 7);
-      } else {
-        endDate.setMonth(endDate.getMonth() + termValue);
-      }
+      if (termUnit === 'weeks') endDate.setDate(endDate.getDate() + termValue * 7);
+      else endDate.setMonth(endDate.getMonth() + termValue);
     }
 
     const months = years * 12;
@@ -695,7 +717,6 @@
     return { interest, finalAmount, endDate, months, monthlyProfit };
   }
 
-  // --- Business logic: loans ---
   function calcLoan(loan) {
     const principal = Number(loan.initial_amount) || 0;
     const balance = Number(loan.current_balance) || 0;
@@ -708,9 +729,7 @@
     }
 
     let months = Math.ceil(balance / monthly);
-    if (rate > 0) {
-      months = Math.ceil(months * 1.1);
-    }
+    if (rate > 0) months = Math.ceil(months * 1.1);
 
     let payoffDate = null;
     if (start && !isNaN(start.getTime())) {
@@ -725,23 +744,18 @@
     return { months, payoffDate, totalPaid, overpay, progress };
   }
 
-  // --- Business logic: incomes ---
   function calcIncomeMonthly(income) {
     const amount = Number(income.amount) || 0;
     switch (income.frequency) {
-      case 'monthly':
-        return amount;
-      case 'weekly':
-        return amount * 4.33;
-      case 'yearly':
-        return amount / 12;
+      case 'monthly': return amount;
+      case 'weekly':  return amount * 4.33;
+      case 'yearly':  return amount / 12;
       case 'once':
-      default:
-        return 0;
+      default:        return 0;
     }
   }
 
-  // --- DASHBOARD 2.0 ---
+  // ---------- DASHBOARD ----------
   function renderDashboard() {
     const mainEl = document.getElementById('dashboard-kpis-main');
     const extraEl = document.getElementById('dashboard-kpis-extra');
@@ -749,51 +763,32 @@
     extraEl.innerHTML = '';
 
     const totalDepositPrincipal = state.deposits.reduce(
-      (sum, d) => sum + (Number(d.amount) || 0),
-      0
-    );
+      (sum, d) => sum + (Number(d.amount) || 0), 0);
     const totalDepositFinal = state.deposits.reduce((sum, d) => {
       const { finalAmount } = calcDeposit(d);
       return sum + finalAmount;
     }, 0);
 
     const totalLoanBalance = state.loans.reduce(
-      (sum, l) => sum + (Number(l.current_balance) || 0),
-      0
-    );
+      (sum, l) => sum + (Number(l.current_balance) || 0), 0);
     const totalLoanPrincipal = state.loans.reduce(
-      (sum, l) => sum + (Number(l.initial_amount) || 0),
-      0
-    );
+      (sum, l) => sum + (Number(l.initial_amount) || 0), 0);
     const totalLoanMonthlyPayment = state.loans.reduce(
-      (sum, l) => sum + (Number(l.monthly_payment) || 0),
-      0
-    );
+      (sum, l) => sum + (Number(l.monthly_payment) || 0), 0);
 
     const totalMonthlyIncome = state.incomes.reduce(
-      (sum, inc) => sum + calcIncomeMonthly(inc),
-      0
-    );
+      (sum, inc) => sum + calcIncomeMonthly(inc), 0);
 
     const netNow = totalDepositPrincipal - totalLoanBalance;
     const netFuture = totalDepositFinal - totalLoanBalance;
     const cashFlow = totalMonthlyIncome - totalLoanMonthlyPayment;
-
     const dti = totalMonthlyIncome > 0
       ? totalLoanMonthlyPayment / totalMonthlyIncome
       : null;
 
     const mainKpis = [
-      {
-        label: 'Net worth сейчас',
-        value: formatMoney(netNow),
-        cls: netNow >= 0 ? 'success' : 'danger'
-      },
-      {
-        label: 'Чистый поток / мес',
-        value: formatMoney(cashFlow),
-        cls: cashFlow >= 0 ? 'success' : 'danger'
-      },
+      { label: 'Net worth сейчас', value: formatMoney(netNow), cls: netNow >= 0 ? 'success' : 'danger' },
+      { label: 'Чистый поток / мес', value: formatMoney(cashFlow), cls: cashFlow >= 0 ? 'success' : 'danger' },
       {
         label: 'Долговая нагрузка (DTI)',
         value: dti === null ? '—' : (dti * 100).toFixed(0) + '%',
@@ -806,25 +801,13 @@
       { label: 'Вклады (в конце срока)', value: formatMoney(totalDepositFinal) },
       { label: 'Долги (остаток)', value: formatMoney(totalLoanBalance), cls: totalLoanBalance > 0 ? 'danger' : '' },
       { label: 'Долги (изначально)', value: formatMoney(totalLoanPrincipal) },
-      {
-        label: 'Доходы / мес',
-        value: formatMoney(totalMonthlyIncome),
-        cls: totalMonthlyIncome >= 0 ? 'success' : ''
-      },
-      {
-        label: 'Платежи по кредитам / мес',
-        value: formatMoney(totalLoanMonthlyPayment),
-        cls: totalLoanMonthlyPayment > 0 ? 'danger' : ''
-      },
-      {
-        label: 'Net worth в будущем',
-        value: formatMoney(netFuture),
-        cls: netFuture >= 0 ? 'success' : 'danger'
-      }
+      { label: 'Доходы / мес', value: formatMoney(totalMonthlyIncome), cls: totalMonthlyIncome >= 0 ? 'success' : '' },
+      { label: 'Платежи по кредитам / мес', value: formatMoney(totalLoanMonthlyPayment), cls: totalLoanMonthlyPayment > 0 ? 'danger' : '' },
+      { label: 'Net worth в будущем', value: formatMoney(netFuture), cls: netFuture >= 0 ? 'success' : 'danger' }
     ];
 
     function renderKpis(list, container) {
-      for (const k of list) {
+      list.forEach(k => {
         const div = document.createElement('div');
         div.className = 'kpi';
         div.innerHTML = `
@@ -832,14 +815,120 @@
           <div class="kpi-value ${k.cls || ''}">${k.value}</div>
         `;
         container.appendChild(div);
-      }
+      });
     }
 
     renderKpis(mainKpis, mainEl);
     renderKpis(extraKpis, extraEl);
   }
 
-  // --- Deposits list + empty state ---
+  // ---------- UPCOMING EVENTS ----------
+  function buildUpcomingEvents(daysAhead = 30) {
+    const now = new Date();
+    const end = new Date(now.getTime() + daysAhead * 24 * 60 * 60 * 1000);
+    const events = [];
+
+    // Вклады с ежемесячной выплатой процентов
+    state.deposits.forEach(d => {
+      if (d.payout_type !== 'monthly') return;
+      if (!d.start_date) return;
+      const start = new Date(d.start_date);
+      if (isNaN(start)) return;
+
+      const day = start.getDate();
+      let next = new Date(now);
+      next.setDate(day);
+      if (next < now) next.setMonth(next.getMonth() + 1);
+      if (next > end) return;
+
+      const { interest, months } = calcDeposit(d);
+      const monthly = months > 0 ? interest / months : 0;
+
+      events.push({
+        type: 'deposit_interest',
+        title: d.name || 'Вклад',
+        date: next.toISOString().slice(0, 10),
+        amount: Math.round(monthly),
+        direction: 'in'
+      });
+    });
+
+    // Кредиты
+    state.loans.forEach(l => {
+      if (!l.monthly_payment) return;
+      const payday = l.payday || 1;
+      let next = new Date(now);
+      next.setDate(payday);
+      if (next < now) next.setMonth(next.getMonth() + 1);
+      if (next > end) return;
+
+      events.push({
+        type: 'loan_payment',
+        title: l.name || 'Кредит',
+        date: next.toISOString().slice(0, 10),
+        amount: Math.round(Number(l.monthly_payment)),
+        direction: 'out'
+      });
+    });
+
+    // Доходы (регулярные)
+    state.incomes.forEach(inc => {
+      if (inc.frequency !== 'monthly') return;
+      const payday = inc.payday ||
+        (inc.date ? new Date(inc.date).getDate() : 1);
+      let next = new Date(now);
+      next.setDate(payday);
+      if (next < now) next.setMonth(next.getMonth() + 1);
+      if (next > end) return;
+
+      events.push({
+        type: 'income',
+        title: inc.name || 'Доход',
+        date: next.toISOString().slice(0, 10),
+        amount: Math.round(Number(inc.amount) || 0),
+        direction: 'in'
+      });
+    });
+
+    events.sort((a, b) => a.date.localeCompare(b.date));
+    return events;
+  }
+
+  function renderEvents() {
+    const list = document.getElementById('events-list');
+    const hint = document.getElementById('events-hint');
+    if (!list || !hint) return;
+
+    const events = buildUpcomingEvents(30);
+    list.innerHTML = '';
+
+    if (!events.length) {
+      list.innerHTML = '<div class="muted">В ближайшие 30 дней выплат нет.</div>';
+      hint.textContent = '';
+      return;
+    }
+
+    events.forEach(ev => {
+      const div = document.createElement('div');
+      div.className = 'item';
+      const sign = ev.direction === 'out' ? '−' : '+';
+      const cls = ev.direction === 'out' ? 'danger' : 'success';
+      div.innerHTML = `
+        <div class="item-header">
+          <span>${ev.title}</span>
+          <span class="${cls}">${sign}${formatMoney(ev.amount).replace('₽','').trim()} ₽</span>
+        </div>
+        <div class="muted">
+          Дата: ${ev.date} • Тип: ${ev.type}
+        </div>
+      `;
+      list.appendChild(div);
+    });
+
+    hint.textContent = `Всего событий: ${events.length}`;
+  }
+
+  // ---------- RENDER LISTS ----------
   function renderDeposits() {
     const list = document.getElementById('dep-list');
     list.innerHTML = '';
@@ -851,7 +940,7 @@
           <p class="empty-state-description">
             Здесь будут ваши вклады. Начните с первого — это займёт меньше минуты.
           </p>
-          <div class="suggestion-card" data-suggestion="deposit-50k">
+          <div class="suggestion-card">
             <div class="suggestion-header">
               <span class="suggestion-emoji">🚀</span>
               <strong>Быстрый старт</strong>
@@ -870,18 +959,18 @@
     state.deposits.forEach((d, idx) => {
       const { interest, finalAmount, endDate } = calcDeposit(d);
       const unitLabel = d.term_unit === 'weeks' ? 'нед.' : 'мес.';
+      const payLabel = d.payout_type === 'monthly' ? 'ежемесячно' : 'в конце срока';
       const isNew = lastAdded.type === 'dep' && lastAdded.id === d.id;
 
       const div = document.createElement('div');
       div.className = 'item' + (isNew ? ' new-add' : '');
-
       div.innerHTML = `
         <div class="item-header">
           <span>${d.name || 'Без названия'}</span>
           <span>${formatMoney(Number(d.amount) || 0)}</span>
         </div>
         <div class="muted">
-          Ставка: ${d.rate_apy || 0}% • Срок: ${d.term_value || 0} ${unitLabel}
+          Ставка: ${d.rate_apy || 0}% • Срок: ${d.term_value || 0} ${unitLabel} • Проценты: ${payLabel}
         </div>
         <div class="muted">
           Начало: ${d.start_date || '—'} • Конец: ${formatDate(endDate)}
@@ -894,14 +983,13 @@
           <button class="secondary" data-remove-dep="${idx}">Удалить</button>
         </div>
       `;
-
       list.appendChild(div);
     });
 
-    document.getElementById('tab-btn-deposits').textContent = `Вклады (${state.deposits.length})`;
+    document.getElementById('tab-btn-deposits').textContent =
+      `Вклады (${state.deposits.length})`;
   }
 
-  // --- Loans list ---
   function renderLoans() {
     const list = document.getElementById('loan-list');
     list.innerHTML = '';
@@ -915,19 +1003,18 @@
     state.loans.forEach((l, idx) => {
       const { months, payoffDate, totalPaid, overpay, progress } = calcLoan(l);
       const isNew = lastAdded.type === 'loan' && lastAdded.id === l.id;
+      const pct = Math.max(0, Math.min(100, Math.round(progress * 100)));
+      const paydayText = l.payday ? ` • День платежа: ${l.payday}` : '';
 
       const div = document.createElement('div');
       div.className = 'item' + (isNew ? ' new-add' : '');
-
-      const pct = Math.max(0, Math.min(100, Math.round(progress * 100)));
-
       div.innerHTML = `
         <div class="item-header">
           <span>${l.name || 'Без названия'}</span>
           <span>${formatMoney(Number(l.current_balance) || 0)}</span>
         </div>
         <div class="muted">
-          Ставка: ${l.rate_apy || 0}% • Платёж: ${formatMoney(Number(l.monthly_payment) || 0)} / мес
+          Ставка: ${l.rate_apy || 0}% • Платёж: ${formatMoney(Number(l.monthly_payment) || 0)} / мес${paydayText}
         </div>
         <div class="muted">
           Старт: ${l.start_date || '—'} • Ориентир закрытия: ${formatDate(payoffDate)} (${months || 0} мес)
@@ -944,14 +1031,13 @@
           <button class="secondary" data-remove-loan="${idx}">Удалить</button>
         </div>
       `;
-
       list.appendChild(div);
     });
 
-    document.getElementById('tab-btn-loans').textContent = `Кредиты (${state.loans.length})`;
+    document.getElementById('tab-btn-loans').textContent =
+      `Кредиты (${state.loans.length})`;
   }
 
-  // --- Incomes list ---
   function renderIncomes() {
     const list = document.getElementById('inc-list');
     list.innerHTML = '';
@@ -978,17 +1064,17 @@
     state.incomes.forEach((inc, idx) => {
       const monthly = calcIncomeMonthly(inc);
       const isNew = lastAdded.type === 'inc' && lastAdded.id === inc.id;
+      const paydayText = inc.payday ? ` • День: ${inc.payday}` : '';
 
       const div = document.createElement('div');
       div.className = 'item' + (isNew ? ' new-add' : '');
-
       div.innerHTML = `
         <div class="item-header">
           <span>${inc.name || 'Без названия'} <span class="tag">${typeMap[inc.type] || ''}</span></span>
           <span>${formatMoney(Number(inc.amount) || 0)}</span>
         </div>
         <div class="muted">
-          Дата: ${inc.date || '—'} • Частота: ${freqMap[inc.frequency] || ''}
+          Дата: ${inc.date || '—'} • Частота: ${freqMap[inc.frequency] || ''}${paydayText}
         </div>
         <div class="muted">
           Оценка в месяц: <span class="success">${formatMoney(monthly)}</span>
@@ -997,11 +1083,11 @@
           <button class="secondary" data-remove-inc="${idx}">Удалить</button>
         </div>
       `;
-
       list.appendChild(div);
     });
 
-    document.getElementById('tab-btn-incomes').textContent = `Доходы (${state.incomes.length})`;
+    document.getElementById('tab-btn-incomes').textContent =
+      `Доходы (${state.incomes.length})`;
   }
 
   function renderAll() {
@@ -1009,9 +1095,10 @@
     renderDeposits();
     renderLoans();
     renderIncomes();
+    renderEvents();
   }
 
-  // --- Tabs & MainButton ---
+  // ---------- TABS & MAIN BUTTON ----------
   function setTab(tab) {
     currentTab = tab;
     document.querySelectorAll('.tab').forEach(t => {
@@ -1033,9 +1120,7 @@
   }
 
   document.querySelectorAll('.tab').forEach(tabEl => {
-    tabEl.addEventListener('click', () => {
-      setTab(tabEl.dataset.tab);
-    });
+    tabEl.addEventListener('click', () => setTab(tabEl.dataset.tab));
   });
 
   if (tg) {
@@ -1046,7 +1131,6 @@
     });
   }
 
-  // --- Dashboard details toggle ---
   document.getElementById('dashboard-details-toggle').addEventListener('click', () => {
     const box = document.getElementById('dashboard-kpis-details');
     const opened = box.style.display !== 'none';
@@ -1055,7 +1139,7 @@
       opened ? 'Показать детали' : 'Скрыть детали';
   });
 
-  // --- Deposit preview ---
+  // ---------- DEPOSIT PREVIEW ----------
   function updateDepositPreview() {
     const amount = parseFloat(document.getElementById('dep-amount').value) || 0;
     const rate = parseFloat(document.getElementById('dep-rate').value) || 0;
@@ -1094,17 +1178,19 @@
     document.getElementById('dep-rate').value = '';
     document.getElementById('dep-term-value').value = '';
     document.getElementById('dep-term-unit').value = 'months';
+    document.getElementById('dep-payout-type').value = 'end';
     setDefaultDate('dep-start-date');
     document.getElementById('dep-preview').style.display = 'none';
   });
 
-  // --- Handlers: add deposit ---
+  // ---------- ADD HANDLERS ----------
   document.getElementById('dep-add-btn').addEventListener('click', () => {
     const name = document.getElementById('dep-name').value.trim();
     const amountEl = document.getElementById('dep-amount');
     const rateEl = document.getElementById('dep-rate');
     const termValEl = document.getElementById('dep-term-value');
     const termUnit = document.getElementById('dep-term-unit').value;
+    const payoutType = document.getElementById('dep-payout-type').value;
     const startDate = document.getElementById('dep-start-date').value;
 
     const amount = amountEl.value;
@@ -1125,6 +1211,7 @@
       rate_apy: rate,
       term_value: termValue,
       term_unit: termUnit,
+      payout_type: payoutType,
       start_date: startDate
     });
 
@@ -1135,25 +1222,27 @@
     rateEl.value = '';
     termValEl.value = '';
     document.getElementById('dep-term-unit').value = 'months';
+    document.getElementById('dep-payout-type').value = 'end';
     setDefaultDate('dep-start-date');
     document.getElementById('dep-preview').style.display = 'none';
 
-    saveState();
+    saveState('add_deposit');
   });
 
-  // --- Handlers: add loan ---
   document.getElementById('loan-add-btn').addEventListener('click', () => {
     const name = document.getElementById('loan-name').value.trim();
     const principalEl = document.getElementById('loan-principal');
     const balanceEl = document.getElementById('loan-balance');
     const rateEl = document.getElementById('loan-rate');
     const monthlyEl = document.getElementById('loan-monthly');
+    const paydayEl = document.getElementById('loan-payday');
     const startDate = document.getElementById('loan-start-date').value;
 
     const principal = principalEl.value;
     let balance = balanceEl.value;
     const rate = rateEl.value;
     const monthly = monthlyEl.value;
+    const payday = paydayEl.value;
 
     let ok = true;
     if (!principal) { showFieldError(principalEl, 'Укажи сумму кредита'); ok = false; }
@@ -1170,6 +1259,7 @@
       current_balance: balance,
       rate_apy: rate,
       monthly_payment: monthly,
+      payday: payday ? Number(payday) : null,
       start_date: startDate
     });
 
@@ -1180,20 +1270,35 @@
     balanceEl.value = '';
     rateEl.value = '';
     monthlyEl.value = '';
+    paydayEl.value = '';
     setDefaultDate('loan-start-date');
 
-    saveState();
+    saveState('add_loan');
   });
 
-  // --- Handlers: add income ---
+  // доходы: авто-дефолт частоты по типу
+  document.getElementById('inc-type').addEventListener('change', () => {
+    const t = document.getElementById('inc-type').value;
+    const freqEl = document.getElementById('inc-frequency');
+    if (t === 'salary' || t === 'dividends' || t === 'interest') {
+      freqEl.value = 'monthly';
+    } else {
+      freqEl.value = 'once';
+    }
+  });
+
   document.getElementById('inc-add-btn').addEventListener('click', () => {
     const name = document.getElementById('inc-name').value.trim();
     const type = document.getElementById('inc-type').value;
     const amountEl = document.getElementById('inc-amount');
     const date = document.getElementById('inc-date').value;
-    const freq = document.getElementById('inc-frequency').value;
+    const freqEl = document.getElementById('inc-frequency');
+    const paydayEl = document.getElementById('inc-payday');
 
     const amount = amountEl.value;
+    const freq = freqEl.value;
+    const payday = paydayEl.value;
+
     if (!amount) {
       showFieldError(amountEl, 'Укажи сумму дохода');
       return;
@@ -1206,21 +1311,27 @@
       type,
       amount,
       date,
-      frequency: freq
+      frequency: freq,
+      payday: payday ? Number(payday) : null
     });
 
     lastAdded = { type: 'inc', id };
 
     document.getElementById('inc-name').value = '';
     amountEl.value = '';
+    paydayEl.value = '';
     setDefaultDate('inc-date');
-    document.getElementById('inc-type').value = 'salary';
-    document.getElementById('inc-frequency').value = 'once';
+    // восстановить дефолт частоты под тип
+    if (type === 'salary' || type === 'dividends' || type === 'interest') {
+      freqEl.value = 'monthly';
+    } else {
+      freqEl.value = 'once';
+    }
 
-    saveState();
+    saveState('add_income');
   });
 
-  // --- Deletes ---
+  // ---------- DELETE HANDLERS ----------
   document.getElementById('dep-list').addEventListener('click', (e) => {
     const btn = e.target.closest('button[data-remove-dep]');
     if (!btn) return;
@@ -1230,7 +1341,7 @@
       const title = item.name || 'вклад';
       if (confirm(`Удалить ${title}?`)) {
         state.deposits.splice(idx, 1);
-        saveState();
+        saveState('delete_deposit');
       }
     }
   });
@@ -1244,7 +1355,7 @@
       const title = item.name || 'кредит';
       if (confirm(`Удалить ${title}?`)) {
         state.loans.splice(idx, 1);
-        saveState();
+        saveState('delete_loan');
       }
     }
   });
@@ -1258,12 +1369,29 @@
       const title = item.name || 'доход';
       if (confirm(`Удалить ${title}?`)) {
         state.incomes.splice(idx, 1);
-        saveState();
+        saveState('delete_income');
       }
     }
   });
 
-  // --- Шаблон быстрого вклада ---
+  // ---------- EVENTS -> BOT ----------
+  document.getElementById('events-send-btn').addEventListener('click', () => {
+    if (!tg) {
+      alert('Отправка в бота доступна только из Telegram.');
+      return;
+    }
+    const events = buildUpcomingEvents(60);
+    const payload = {
+      type: 'schedule',
+      events
+    };
+    tg.sendData(JSON.stringify(payload));
+    if (tg.HapticFeedback) {
+      tg.HapticFeedback.notificationOccurred('success');
+    }
+  });
+
+  // шаблон быстрого вклада
   function applyDepositSuggestion(amount, rate, months) {
     document.getElementById('dep-amount').value = amount;
     document.getElementById('dep-rate').value = rate;
@@ -1275,7 +1403,7 @@
   }
   window.applyDepositSuggestion = applyDepositSuggestion;
 
-  // --- Init ---
+  // ---------- INIT ----------
   loadState();
   renderAll();
   setTab('deposits');
